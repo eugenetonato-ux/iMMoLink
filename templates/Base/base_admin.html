@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}iMMoLink Admin{% endblock %}</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <div class="admin-sidebar-brand">
+        <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="admin-sidebar-brand-icon">
+        <span>iMMoLink Admin</span>
+      </div>
+
+      <nav class="admin-nav">
+        <a href="{% url 'adminpanel:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-chart-line"></i></span> Dashboard
+        </a>
+        <a href="{% url 'adminpanel:annonces' %}" class="{% if request.resolver_match.url_name == 'annonces' %}active{% endif %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-city"></i></span> Annonces
+        </a>
+        <a href="{% url 'adminpanel:utilisateurs' %}" class="{% if request.resolver_match.url_name == 'utilisateurs' %}active{% endif %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-users"></i></span> Utilisateurs
+        </a>
+        <a href="{% url 'adminpanel:transactions' %}" class="{% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-credit-card"></i></span> Transactions
+        </a>
+        <a href="{% url 'adminpanel:parametres' %}" class="{% if request.resolver_match.url_name == 'parametres' %}active{% endif %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-gear"></i></span> Paramètres
+        </a>
+        <a href="{% url 'adminpanel:logs' %}" class="{% if request.resolver_match.url_name == 'logs' %}active{% endif %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-file-lines"></i></span> Logs
+        </a>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <a href="{% url 'website:home' %}" target="_blank">
+          <span class="admin-nav-icon"><i class="fa-solid fa-globe"></i></span> Voir le site
+        </a>
+        <a href="{% url 'adminpanel:deconnexion' %}">
+          <span class="admin-nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span> Déconnexion
+        </a>
+      </div>
+    </aside>
+
+    <div class="admin-main">
+      <div class="admin-topbar">
+        <div>
+          <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+          <p class="admin-topbar-subtitle">{% block page_subtitle %}Bonjour, Administrateur.{% endblock %}</p>
+        </div>
+        {% block topbar_actions %}{% endblock %}
+      </div>
+
+      <div class="admin-content">
+        {% if messages %}
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+      </div>
+    </div>
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "Base/base_admin.html" %}
+{% load static %}
+
+{% block title %}Transactions — iMMoLink Admin{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+{% block page_subtitle %}Frais de mise en relation payés par les locataires.{% endblock %}
+
+{% block topbar_actions %}
+  <a href="{% url 'adminpanel:transactions_export' %}" class="admin-btn admin-btn-primary"><i class="fa-solid fa-download"></i> Exporter en CSV</a>
+{% endblock %}
+
+{% block content %}
+  <div class="admin-card">
+    {% if transactions %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Référence</th><th>Locataire</th><th>Annonce</th><th>Propriétaire</th><th>Montant</th><th>Méthode</th><th>Statut</th><th>Date</th></tr>
+          </thead>
+          <tbody>
+            {% for paiement in transactions %}
+              <tr>
+                <td><span style="font-family: monospace; font-size: 0.8em;">{{ paiement.reference|slice:":12" }}…</span></td>
+                <td>{{ paiement.locataire.email }}</td>
+                <td>{{ paiement.annonce.titre }}</td>
+                <td>{{ paiement.proprietaire.user.email }}</td>
+                <td class="price">{{ paiement.montant|floatformat:"0" }}</td>
+                <td>{{ paiement.get_methode_display|default:"—" }}</td>
+                <td>
+                  <span class="admin-badge admin-badge-{% if paiement.statut == 'successful' %}success{% elif paiement.statut == 'pending' %}warning{% elif paiement.statut == 'failed' or paiement.statut == 'cancelled' %}error{% else %}neutral{% endif %}">
+                    {{ paiement.get_statut_display }}
+                  </span>
+                </td>
+                <td>{{ paiement.created_at|date:"d/m/Y H:i" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="admin-empty">Aucune transaction pour le moment.</p>
+    {% endif %}
+  </div>
+{% endblock %}

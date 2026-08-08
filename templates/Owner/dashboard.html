@@ -1,0 +1,73 @@
+{% extends "Base/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Tableau de bord propriétaire — iMMoLink{% endblock %}
+{% block dashboard_title %}Tableau de bord{% endblock %}
+
+{% block dashboard_header_actions %}
+  <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary">+ Nouvelle annonce</a>
+{% endblock %}
+
+{% block dashboard_content %}
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="stat-label">Logements</span>
+      <div class="stat-value">{{ stats.total }}</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Publiées</span>
+      <div class="stat-value" style="color: var(--color-success);">{{ stats.publiees }}</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">En attente</span>
+      <div class="stat-value" style="color: var(--color-warning);">{{ stats.en_attente }}</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Refusées</span>
+      <div class="stat-value" style="color: var(--color-error);">{{ stats.refusees }}</div>
+    </div>
+  </div>
+
+  <div class="dashboard-section">
+    <div class="dashboard-section-title">
+      <h2>Dernières annonces</h2>
+      <a href="{% url 'owner:mes_annonces' %}" class="text-secondary">Voir tout →</a>
+    </div>
+
+    {% if dernieres_annonces %}
+      <div class="card owner-listing-table">
+        {% for annonce in dernieres_annonces %}
+          <div class="owner-listing-row">
+            <div class="owner-listing-info">
+              <span class="owner-listing-title">{{ annonce.titre }}</span>
+              <span class="text-secondary owner-listing-loc"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }} · <span class="price">{{ annonce.prix|floatformat:"0" }}</span>/{{ annonce.get_periodicite_display }}</span>
+            </div>
+            <span class="badge badge-{% if annonce.statut == 'publiee' %}success{% elif annonce.statut == 'en_attente_validation' %}warning{% elif annonce.statut == 'refusee' or annonce.statut == 'suspendue' %}error{% else %}neutral{% endif %}">
+              {{ annonce.get_statut_display }}
+            </span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <h3>Aucune annonce pour le moment</h3>
+        <p>Publie ton premier logement pour commencer à recevoir des demandes.</p>
+        <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary" style="margin-top: 12px;">Publier un logement</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .owner-listing-table { padding: 6px 20px; }
+    .owner-listing-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--color-border);
+    }
+    .owner-listing-row:last-child { border-bottom: none; }
+    .owner-listing-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .owner-listing-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .owner-listing-loc { font-size: 0.82rem; }
+  </style>
+{% endblock %}

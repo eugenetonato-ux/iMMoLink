@@ -1,0 +1,63 @@
+{% extends "Base/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Tableau de bord locataire — iMMoLink{% endblock %}
+{% block dashboard_title %}Tableau de bord{% endblock %}
+
+{% block dashboard_content %}
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="stat-label">Favoris</span>
+      <div class="stat-value">{{ stats.favoris }}</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Contacts débloqués</span>
+      <div class="stat-value" style="color: var(--color-success);">{{ stats.contacts_debloques }}</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Paiements effectués</span>
+      <div class="stat-value">{{ stats.paiements }}</div>
+    </div>
+  </div>
+
+  <div class="dashboard-section">
+    <div class="dashboard-section-title">
+      <h2>Derniers contacts débloqués</h2>
+      <a href="{% url 'website:logements' %}" class="text-secondary">Chercher un logement →</a>
+    </div>
+
+    {% if derniers_contacts %}
+      <div class="card owner-listing-table">
+        {% for contact in derniers_contacts %}
+          <div class="owner-listing-row">
+            <div class="owner-listing-info">
+              <span class="owner-listing-title">{{ contact.annonce.titre }}</span>
+              <span class="text-secondary owner-listing-loc"><i class="fa-solid fa-location-dot"></i> {{ contact.annonce.quartier }}, {{ contact.annonce.ville }} · débloqué le {{ contact.unlocked_at|date:"d/m/Y" }}</span>
+            </div>
+            <a href="{% url 'website:annonce_detail' contact.annonce.pk %}" class="btn btn-outline btn-sm">Voir</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <h3>Aucun contact débloqué pour le moment</h3>
+        <p>Trouve un logement qui te plaît et contacte le propriétaire en toute sécurité.</p>
+        <a href="{% url 'website:logements' %}" class="btn btn-primary" style="margin-top: 12px;">Rechercher un logement</a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .owner-listing-table { padding: 6px 20px; }
+    .owner-listing-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 14px 0; border-bottom: 1px solid var(--color-border);
+    }
+    .owner-listing-row:last-child { border-bottom: none; }
+    .owner-listing-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .owner-listing-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .owner-listing-loc { font-size: 0.82rem; }
+  </style>
+{% endblock %}

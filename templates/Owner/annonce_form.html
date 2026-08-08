@@ -1,0 +1,160 @@
+{% extends "Base/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}{% if annonce %}Modifier l'annonce{% else %}Nouvelle annonce{% endif %} — iMMoLink{% endblock %}
+{% block dashboard_title %}{% if annonce %}Modifier l'annonce{% else %}Nouvelle annonce{% endif %}{% endblock %}
+{% block dashboard_subtitle %}<p class="text-secondary">Les annonces sont vérifiées par l'équipe iMMoLink avant publication.</p>{% endblock %}
+
+{% block dashboard_content %}
+  <form method="post" enctype="multipart/form-data" class="annonce-form">
+    {% csrf_token %}
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">1</span> Informations générales</h2>
+      <div class="field field-full">
+        <label for="titre">Titre de l'annonce <span class="required">*</span></label>
+        <input type="text" name="titre" id="titre" value="{{ annonce.titre|default:'' }}" placeholder="Ex. Studio meublé proche de la mer" required>
+      </div>
+      <div class="field field-full">
+        <label for="description">Description <span class="required">*</span></label>
+        <textarea name="description" id="description" rows="5" placeholder="Décris le logement, son état, son environnement…" required>{{ annonce.description|default:'' }}</textarea>
+      </div>
+      <div class="form-grid-2">
+        <div class="field">
+          <label for="type_logement">Type de logement <span class="required">*</span></label>
+          <select name="type_logement" id="type_logement" required>
+            <option value="">Choisir…</option>
+            <option value="chambre" {% if annonce.type_logement == "chambre" %}selected{% endif %}>Chambre</option>
+            <option value="studio" {% if annonce.type_logement == "studio" %}selected{% endif %}>Studio</option>
+            <option value="appartement" {% if annonce.type_logement == "appartement" %}selected{% endif %}>Appartement</option>
+            <option value="maison" {% if annonce.type_logement == "maison" %}selected{% endif %}>Maison</option>
+            <option value="villa" {% if annonce.type_logement == "villa" %}selected{% endif %}>Villa</option>
+            <option value="autre" {% if annonce.type_logement == "autre" %}selected{% endif %}>Autre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="chambres">Nombre de chambres</label>
+          <input type="number" name="chambres" id="chambres" min="0" value="{{ annonce.chambres|default:'1' }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">2</span> Prix &amp; conditions</h2>
+      <div class="form-grid-2">
+        <div class="field">
+          <label for="prix">Prix (XOF) <span class="required">*</span></label>
+          <input type="number" name="prix" id="prix" min="0" step="500" value="{{ annonce.prix|default:'' }}" required>
+        </div>
+        <div class="field">
+          <label for="periodicite">Périodicité <span class="required">*</span></label>
+          <select name="periodicite" id="periodicite" required>
+            <option value="mensuel" {% if annonce.periodicite == "mensuel" or not annonce %}selected{% endif %}>Mensuel</option>
+            <option value="trimestriel" {% if annonce.periodicite == "trimestriel" %}selected{% endif %}>Trimestriel</option>
+            <option value="annuel" {% if annonce.periodicite == "annuel" %}selected{% endif %}>Annuel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="caution">Caution (XOF, optionnel)</label>
+          <input type="number" name="caution" id="caution" min="0" step="500" value="{{ annonce.caution|default:'' }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">3</span> Localisation</h2>
+      <div class="form-grid-2">
+        <div class="field">
+          <label for="ville">Ville <span class="required">*</span></label>
+          <select name="ville" id="ville" required>
+            <option value="">Choisir…</option>
+            {% for ville in villes %}
+              <option value="{{ ville.nom }}" {% if annonce.ville == ville.nom %}selected{% endif %}>{{ ville.nom }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="quartier">Quartier <span class="required">*</span></label>
+          <input type="text" name="quartier" id="quartier" value="{{ annonce.quartier|default:'' }}" required>
+        </div>
+        <div class="field field-full">
+          <label for="adresse">Adresse précise (optionnel, non affichée publiquement)</label>
+          <input type="text" name="adresse" id="adresse" value="{{ annonce.adresse|default:'' }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">4</span> Équipements</h2>
+      <div class="amenities-check-grid">
+        {% for amenity in amenities %}
+          <label class="amenity-check">
+            <input type="checkbox" name="amenities" value="{{ amenity.pk }}" {% if amenity.pk in amenity_ids_selectionnes %}checked{% endif %}>
+            {% if amenity.icone %}<i class="fa-solid {{ amenity.icone }}"></i>{% endif %} {{ amenity.nom }}
+          </label>
+        {% empty %}
+          <p class="text-secondary">Aucun équipement défini pour le moment.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">5</span> Photos</h2>
+      {% if annonce and annonce.images.all %}
+        <div class="existing-photos">
+          {% for image in annonce.images.all %}
+            <img src="{{ image.fichier.url }}" alt="" class="existing-photo{% if image.principale %} existing-photo-main{% endif %}">
+          {% endfor %}
+        </div>
+      {% endif %}
+      <div class="field field-full">
+        <label for="photos">Ajouter des photos {% if not annonce or not annonce.images.all %}<span class="required">*</span>{% endif %}</label>
+        <input type="file" name="photos" id="photos" accept="image/*" multiple>
+        <p class="field-hint text-secondary">La première photo ajoutée devient la photo principale si aucune n'existe déjà.</p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-outline">Enregistrer en brouillon</button>
+      <button type="submit" name="action" value="envoyer_validation" class="btn btn-primary">Enregistrer et envoyer pour validation</button>
+    </div>
+  </form>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .annonce-form { display: flex; flex-direction: column; gap: 20px; max-width: 760px; }
+    .form-step { padding: 24px; }
+    .form-step-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; margin-bottom: 18px; }
+    .form-step-num {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--color-primary); color: #fff;
+      display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;
+    }
+    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label { font-size: 0.85rem; font-weight: 600; }
+    .field input, .field select, .field textarea {
+      border: 1px solid var(--color-border); border-radius: 10px; padding: 10px 12px;
+      font-family: var(--font-body); font-size: 0.92rem; color: var(--color-text); background: var(--color-bg);
+      resize: vertical;
+    }
+    .field-hint { font-size: 0.78rem; margin: 4px 0 0; }
+    .required { color: var(--color-error); }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px 16px; }
+    @media (min-width: 560px) { .form-grid-2 { grid-template-columns: 1fr 1fr; } }
+    .field-full { grid-column: 1 / -1; }
+
+    .amenities-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .amenity-check {
+      display: flex; align-items: center; gap: 8px; font-size: 0.88rem;
+      border: 1px solid var(--color-border); border-radius: 10px; padding: 9px 12px; cursor: pointer;
+    }
+    .amenity-check:has(input:checked) { border-color: var(--color-primary); background: rgba(29,122,116,0.06); }
+
+    .existing-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .existing-photo { width: 84px; height: 64px; object-fit: cover; border-radius: 8px; }
+    .existing-photo-main { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+    .form-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 40px; }
+  </style>
+{% endblock %}

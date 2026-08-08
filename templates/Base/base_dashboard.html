@@ -1,0 +1,42 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+  <nav class="dashboard-tabs">
+    <div class="container">
+      {% if request.user.role == "locataire" %}
+        <a href="{% url 'tenant:tenant_dashboard' %}" class="{% if request.resolver_match.url_name == 'tenant_dashboard' %}active{% endif %}">Tableau de bord</a>
+        <a href="{% url 'tenant:favoris' %}" class="{% if request.resolver_match.url_name == 'favoris' %}active{% endif %}">Mes favoris</a>
+      {% elif request.user.role == "proprietaire" %}
+        <a href="{% url 'owner:owner_dashboard' %}" class="{% if request.resolver_match.url_name == 'owner_dashboard' %}active{% endif %}">Tableau de bord</a>
+        <a href="{% url 'owner:mes_annonces' %}" class="{% if request.resolver_match.url_name == 'mes_annonces' %}active{% endif %}">Mes annonces</a>
+        <a href="{% url 'owner:annonce_nouvelle' %}" class="{% if request.resolver_match.url_name == 'annonce_nouvelle' %}active{% endif %}">Nouvelle annonce</a>
+        <a href="{% url 'accounts:completer_profil_proprietaire' %}" class="{% if request.resolver_match.url_name == 'completer_profil_proprietaire' %}active{% endif %}">Mon profil</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <div class="dashboard-main">
+    <div class="container">
+
+      {% block profile_alert %}{% endblock %}
+
+      <div class="dashboard-header">
+        <div>
+          <h1>{% block dashboard_title %}Tableau de bord{% endblock %}</h1>
+          {% block dashboard_subtitle %}
+            <p class="text-secondary">Bonjour, {{ request.user.first_name|default:request.user.email }}.</p>
+          {% endblock %}
+        </div>
+        {% block dashboard_header_actions %}{% endblock %}
+      </div>
+
+      {% block dashboard_content %}{% endblock %}
+
+    </div>
+  </div>
+{% endblock %}

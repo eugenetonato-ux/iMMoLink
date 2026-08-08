@@ -1,0 +1,153 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block title %}{{ annonce.titre }} — iMMoLink{% endblock %}
+
+{% block content %}
+  <section class="detail-page">
+    <div class="container detail-grid">
+
+      <!-- Colonne principale -->
+      <div class="detail-main">
+
+        <div class="gallery card">
+          {% if annonce.photo_principale %}
+            <img src="{{ annonce.photo_principale.url }}" alt="{{ annonce.titre }}" class="gallery-main">
+          {% else %}
+            <div class="gallery-main gallery-placeholder"><i class="fa-solid fa-house"></i></div>
+          {% endif %}
+          {% if annonce.images.all %}
+            <div class="gallery-thumbs">
+              {% for image in annonce.images.all %}
+                <img src="{{ image.fichier.url }}" alt="" class="gallery-thumb">
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="card detail-info">
+          <div class="detail-info-top">
+            <div>
+              <span class="badge badge-{% if annonce.disponibilite == 'disponible' %}success{% else %}error{% endif %}">
+                {{ annonce.get_disponibilite_display|default:annonce.disponibilite }}
+              </span>
+              <h1 class="detail-title">{{ annonce.titre }}</h1>
+              <p class="text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }}</p>
+            </div>
+            <div class="detail-price">
+              <span class="price">{{ annonce.prix|floatformat:"0" }}</span>
+              <span class="text-secondary">/ {{ annonce.get_periodicite_display|default:annonce.periodicite }}</span>
+            </div>
+          </div>
+
+          <div class="detail-meta">
+            <span><i class="fa-solid fa-tag"></i> {{ annonce.get_type_logement_display|default:annonce.type_logement }}</span>
+            {% if annonce.caution %}<span><i class="fa-solid fa-lock"></i> Caution : {{ annonce.caution|floatformat:"0" }} XOF</span>{% endif %}
+          </div>
+
+          <h2>Description</h2>
+          <p class="detail-description">{{ annonce.description|linebreaks }}</p>
+
+          {% if annonce.amenities.all %}
+            <h2>Équipements</h2>
+            <ul class="amenities-list">
+              {% for equipement in annonce.amenities.all %}
+                <li><i class="fa-solid {{ equipement.icone|default:'fa-check' }}"></i> {{ equipement.nom }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+
+          <h2>Localisation</h2>
+          <p class="text-secondary">{{ annonce.quartier }}, {{ annonce.ville }}, Bénin</p>
+        </div>
+      </div>
+
+      <!-- Colonne latérale : propriétaire + contact -->
+      <aside class="detail-sidebar">
+        <div class="card owner-card">
+          <div class="owner-card-top">
+            {% if annonce.proprietaire.photo_profil %}
+              <img src="{{ annonce.proprietaire.photo_profil.url }}" alt="" class="owner-photo">
+            {% endif %}
+            <div>
+              <p class="owner-name">
+                {{ annonce.proprietaire.user.first_name|default:"Propriétaire" }}
+                {% if annonce.proprietaire.verifie %}<span class="badge badge-success"><i class="fa-solid fa-check"></i> Vérifié</span>{% endif %}
+              </p>
+              <p class="text-secondary owner-location">{{ annonce.proprietaire.ville }}</p>
+            </div>
+          </div>
+
+          {% if contact_debloque %}
+            <a href="{{ whatsapp_link }}" target="_blank" rel="noopener" class="btn btn-success btn-block">
+              <i class="fa-brands fa-whatsapp"></i> Contacter sur WhatsApp
+            </a>
+          {% else %}
+            <p class="text-secondary contact-hint">Le numéro WhatsApp est masqué. Débloque le contact pour échanger directement avec le propriétaire.</p>
+            <a href="{% url 'website:annonce_contact' annonce.pk %}" class="btn btn-primary btn-block">
+              Contacter le propriétaire
+            </a>
+            <p class="contact-fee text-secondary">Frais de mise en relation : <strong>{{ frais_contact|default:"1 000" }} XOF</strong></p>
+          {% endif %}
+        </div>
+
+        <div class="card trust-card">
+          <p><i class="fa-solid fa-lock"></i> Paiement sécurisé Moov Money / MTN Money</p>
+          <p><i class="fa-solid fa-circle-check"></i> Logements vérifiés par l'équipe iMMoLink</p>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .detail-page { padding: 24px 0 60px; }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media (min-width: 900px) {
+      .detail-grid { grid-template-columns: 2fr 1fr; align-items: start; }
+    }
+
+    .gallery { padding: 0; overflow: hidden; margin-bottom: 20px; }
+    .gallery-main { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; }
+    .gallery-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 3rem; color: var(--color-text-secondary); background: var(--color-bg-soft);
+    }
+    .gallery-thumbs { display: flex; gap: 8px; padding: 10px; overflow-x: auto; }
+    .gallery-thumb { width: 72px; height: 56px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+
+    .detail-info { padding: 24px; }
+    .detail-info-top {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .detail-title { font-size: 1.5rem; margin: 8px 0 4px; }
+    .detail-price { font-size: 1.3rem; white-space: nowrap; }
+    .detail-meta {
+      display: flex; gap: 18px; flex-wrap: wrap;
+      font-size: 0.9rem; color: var(--color-text-secondary);
+      padding: 12px 0; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);
+      margin-bottom: 16px;
+    }
+    .detail-info h2 { font-size: 1.05rem; margin-top: 20px; }
+    .detail-description { color: var(--color-text); font-size: 0.95rem; }
+    .amenities-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; font-size: 0.9rem; }
+
+    .detail-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: calc(var(--header-height) + 16px); }
+    .owner-card { padding: 20px; }
+    .owner-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .owner-photo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+    .owner-name { margin: 0; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .owner-location { margin: 0; font-size: 0.85rem; }
+    .contact-hint { font-size: 0.85rem; margin: 0 0 12px; }
+    .contact-fee { font-size: 0.8rem; text-align: center; margin: 10px 0 0; }
+
+    .trust-card { padding: 16px 20px; font-size: 0.85rem; color: var(--color-text-secondary); display: flex; flex-direction: column; gap: 6px; }
+  </style>
+{% endblock %}

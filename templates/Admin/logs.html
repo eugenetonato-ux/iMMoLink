@@ -1,0 +1,32 @@
+{% extends "Base/base_admin.html" %}
+{% load static %}
+
+{% block title %}Logs — iMMoLink Admin{% endblock %}
+{% block page_title %}Journal d'activité{% endblock %}
+{% block page_subtitle %}Journal append-only des actions admin sensibles (200 dernières entrées).{% endblock %}
+
+{% block content %}
+  <div class="admin-card">
+    {% if logs %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Date</th><th>Admin</th><th>Action</th><th>Cible</th></tr>
+          </thead>
+          <tbody>
+            {% for entry in logs %}
+              <tr>
+                <td>{{ entry.created_at|date:"d/m/Y H:i" }}</td>
+                <td>{{ entry.admin_identifiant }}</td>
+                <td>{{ entry.action }}</td>
+                <td>{{ entry.cible|default:"—" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="admin-empty">Aucune action journalisée pour le moment.</p>
+    {% endif %}
+  </div>
+{% endblock %}

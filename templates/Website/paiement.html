@@ -1,0 +1,90 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block title %}Paiement — {{ annonce.titre }} — iMMoLink{% endblock %}
+
+{% block content %}
+  <section class="paiement-page">
+    <div class="container paiement-container">
+      <div class="card paiement-card">
+        <a href="{% url 'website:annonce_detail' annonce.pk %}" class="paiement-back">← Retour à l'annonce</a>
+
+        <h1>Débloquer le contact du propriétaire</h1>
+        <p class="text-secondary paiement-subtitle">
+          Paie les frais de mise en relation pour recevoir le numéro WhatsApp du propriétaire de
+          « {{ annonce.titre }} » et échanger directement avec lui.
+        </p>
+
+        <div class="paiement-summary">
+          <div class="paiement-summary-row">
+            <span class="text-secondary">Annonce</span>
+            <span>{{ annonce.titre }}</span>
+          </div>
+          <div class="paiement-summary-row">
+            <span class="text-secondary">Référence</span>
+            <span class="paiement-reference">{{ paiement.reference }}</span>
+          </div>
+          <div class="paiement-summary-row paiement-summary-total">
+            <span>Montant à payer</span>
+            <span class="price">{{ paiement.montant|floatformat:"0" }}</span>
+          </div>
+        </div>
+
+        <form method="post" action="{% url 'payments:confirmer_dev' paiement.reference %}" class="paiement-methodes">
+          {% csrf_token %}
+          <label class="paiement-methode">
+            <input type="radio" name="methode" value="moov_money" checked>
+            <span><i class="fa-solid fa-mobile-screen-button"></i> Moov Money</span>
+          </label>
+          <label class="paiement-methode">
+            <input type="radio" name="methode" value="mtn_money">
+            <span><i class="fa-solid fa-mobile-screen-button"></i> MTN Money</span>
+          </label>
+
+          {% if debug %}
+            <p class="paiement-dev-note">Mode développement : aucune clé Sebpay n'est configurée. Ce bouton simule la confirmation d'un paiement réussi (webhook).</p>
+          {% endif %}
+
+          <button type="submit" class="btn btn-success btn-block">Confirmer le paiement</button>
+        </form>
+
+        <form method="post" action="{% url 'payments:annuler' paiement.reference %}" class="paiement-cancel">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline btn-block">Annuler</button>
+        </form>
+
+        <p class="paiement-secure text-secondary"><i class="fa-solid fa-lock"></i> Paiement sécurisé Moov Money / MTN Money — aucune donnée de contact n'est affichée avant confirmation.</p>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .paiement-page { padding: 40px 0 60px; }
+    .paiement-container { display: flex; justify-content: center; }
+    .paiement-card { max-width: 460px; width: 100%; padding: 32px; }
+    .paiement-back { display: inline-block; font-size: 0.85rem; color: var(--color-text-secondary); margin-bottom: 16px; }
+    .paiement-card h1 { font-size: 1.25rem; margin-bottom: 6px; }
+    .paiement-subtitle { font-size: 0.88rem; margin-bottom: 22px; }
+
+    .paiement-summary {
+      background: var(--color-bg-soft); border-radius: var(--radius-btn);
+      padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .paiement-summary-row { display: flex; justify-content: space-between; font-size: 0.9rem; }
+    .paiement-reference { font-family: monospace; font-size: 0.82rem; }
+    .paiement-summary-total { border-top: 1px solid var(--color-border); padding-top: 10px; font-weight: 700; font-size: 1.05rem; }
+
+    .paiement-methodes { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .paiement-methode {
+      display: flex; align-items: center; gap: 10px; border: 1px solid var(--color-border);
+      border-radius: 10px; padding: 10px 14px; cursor: pointer; font-size: 0.92rem;
+    }
+    .paiement-methode:has(input:checked) { border-color: var(--color-primary); background: rgba(29,122,116,0.06); }
+    .paiement-dev-note { font-size: 0.78rem; color: var(--color-warning); background: rgba(245,158,11,0.08); padding: 8px 10px; border-radius: 8px; margin: 4px 0; }
+
+    .paiement-cancel { margin-top: 10px; }
+    .paiement-secure { font-size: 0.78rem; text-align: center; margin: 18px 0 0; }
+  </style>
+{% endblock %}

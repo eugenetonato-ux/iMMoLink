@@ -1,0 +1,78 @@
+{% extends "Base/base_admin.html" %}
+{% load static %}
+
+{% block title %}Annonces — iMMoLink Admin{% endblock %}
+{% block page_title %}Annonces{% endblock %}
+{% block page_subtitle %}Validation, refus et suspension des annonces.{% endblock %}
+
+{% block content %}
+  <div class="admin-filters" style="margin-bottom: 18px;">
+    <a href="?statut=en_attente_validation" class="{% if statut_filtre == 'en_attente_validation' %}active{% endif %}">En attente</a>
+    <a href="?statut=publiee" class="{% if statut_filtre == 'publiee' %}active{% endif %}">Publiées</a>
+    <a href="?statut=refusee" class="{% if statut_filtre == 'refusee' %}active{% endif %}">Refusées</a>
+    <a href="?statut=suspendue" class="{% if statut_filtre == 'suspendue' %}active{% endif %}">Suspendues</a>
+    <a href="?statut=brouillon" class="{% if statut_filtre == 'brouillon' %}active{% endif %}">Brouillons</a>
+    <a href="?statut=" class="{% if not statut_filtre %}active{% endif %}">Toutes</a>
+  </div>
+
+  <div class="admin-card">
+    {% if annonces %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Annonce</th><th>Propriétaire</th><th>Ville / Quartier</th><th>Prix</th><th>Statut</th><th>Soumise le</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for annonce in annonces %}
+              <tr>
+                <td>{{ annonce.titre }}</td>
+                <td>{{ annonce.proprietaire.user.email }}</td>
+                <td>{{ annonce.quartier }}, {{ annonce.ville }}</td>
+                <td class="price">{{ annonce.prix|floatformat:"0" }}</td>
+                <td>
+                  <span class="admin-badge admin-badge-{% if annonce.statut == 'publiee' %}success{% elif annonce.statut == 'en_attente_validation' %}warning{% elif annonce.statut == 'refusee' or annonce.statut == 'suspendue' %}error{% else %}neutral{% endif %}">
+                    {{ annonce.get_statut_display }}
+                  </span>
+                </td>
+                <td>{{ annonce.created_at|date:"d/m/Y" }}</td>
+                <td>
+                  <div class="admin-table-actions">
+                    {% if annonce.statut == "en_attente_validation" %}
+                      <form method="post" action="{% url 'adminpanel:annonce_valider' annonce.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="admin-btn admin-btn-success">Approuver</button>
+                      </form>
+                      <form method="post" action="{% url 'adminpanel:annonce_refuser' annonce.pk %}" onsubmit="return remplirMotif(this);">
+                        {% csrf_token %}
+                        <input type="hidden" name="motif" value="">
+                        <button type="submit" class="admin-btn admin-btn-error">Refuser</button>
+                      </form>
+                    {% elif annonce.statut == "publiee" %}
+                      <form method="post" action="{% url 'adminpanel:annonce_suspendre' annonce.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="admin-btn admin-btn-outline">Suspendre</button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="admin-empty">Aucune annonce dans cette catégorie.</p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function remplirMotif(form) {
+      const motif = prompt("Motif du refus (visible par le propriétaire) :");
+      if (motif === null) return false;
+      form.querySelector('input[name="motif"]').value = motif;
+      return true;
+    }
+  </script>
+{% endblock %}

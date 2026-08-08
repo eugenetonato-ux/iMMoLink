@@ -1,0 +1,72 @@
+{% extends "Base/base_admin.html" %}
+{% load static %}
+
+{% block title %}Dashboard — iMMoLink Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Bonjour, Administrateur. Voici l'activité de la plateforme.{% endblock %}
+
+{% block content %}
+  <div class="admin-stat-grid">
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Utilisateurs</span>
+      <div class="admin-stat-value">{{ stats.utilisateurs_total }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Locataires / Propriétaires</span>
+      <div class="admin-stat-value">{{ stats.locataires }} / {{ stats.proprietaires }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Annonces publiées</span>
+      <div class="admin-stat-value" style="color: var(--admin-success);">{{ stats.annonces_publiees }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">En attente de validation</span>
+      <div class="admin-stat-value" style="color: var(--admin-warning);">{{ stats.annonces_en_attente }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Revenus (paiements réussis)</span>
+      <div class="admin-stat-value price">{{ stats.revenus_total|floatformat:"0" }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <span class="admin-stat-label">Paiements réussis / échoués</span>
+      <div class="admin-stat-value">{{ stats.paiements_reussis }} / {{ stats.paiements_echoues }}</div>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <div class="admin-card-header">
+      <h2>File de validation des annonces</h2>
+      <a href="{% url 'adminpanel:annonces' %}" class="admin-btn admin-btn-outline">Voir tout</a>
+    </div>
+    {% if annonces_recentes %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Annonce</th><th>Propriétaire</th><th>Ville</th><th>Prix</th><th>Soumise le</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for annonce in annonces_recentes %}
+              <tr>
+                <td>{{ annonce.titre }}</td>
+                <td>{{ annonce.proprietaire.user.email }}</td>
+                <td>{{ annonce.ville }}</td>
+                <td class="price">{{ annonce.prix|floatformat:"0" }}</td>
+                <td>{{ annonce.created_at|date:"d/m/Y" }}</td>
+                <td>
+                  <div class="admin-table-actions">
+                    <form method="post" action="{% url 'adminpanel:annonce_valider' annonce.pk %}">
+                      {% csrf_token %}
+                      <button type="submit" class="admin-btn admin-btn-success">Approuver</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="admin-empty"><i class="fa-solid fa-circle-check"></i> Aucune annonce en attente de validation.</p>
+    {% endif %}
+  </div>
+{% endblock %}

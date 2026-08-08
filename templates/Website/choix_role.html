@@ -1,0 +1,58 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block title %}Choisis ton profil — iMMoLink{% endblock %}
+
+{% block content %}
+  <section class="role-page">
+    <div class="container role-container">
+      <div class="role-intro">
+        <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="connexion-icon">
+        <h1>Bienvenue, {{ request.user.first_name|default:request.user.email }}</h1>
+        <p class="text-secondary">Dis-nous ce que tu viens faire sur iMMoLink. Ce choix est définitif pour ce compte.</p>
+      </div>
+
+      <form method="post" class="role-grid">
+        {% csrf_token %}
+        <button type="submit" name="role" value="locataire" class="card role-card">
+          <span class="role-card-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <h2>Je cherche un logement</h2>
+          <p class="text-secondary">Recherche, favoris, contact sécurisé avec les propriétaires.</p>
+          <span class="btn btn-primary role-card-cta">Continuer en tant que locataire</span>
+        </button>
+
+        <button type="submit" name="role" value="proprietaire" class="card role-card">
+          <span class="role-card-icon"><i class="fa-solid fa-city"></i></span>
+          <h2>Je publie un logement</h2>
+          <p class="text-secondary">Crée tes annonces, gère tes photos, suis leur statut de validation.</p>
+          <span class="btn btn-accent role-card-cta">Continuer en tant que propriétaire</span>
+        </button>
+      </form>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .role-page { padding: 56px 0; min-height: calc(100vh - var(--header-height) - 260px); display: flex; align-items: center; }
+    .role-container { max-width: 760px; }
+    .role-intro { text-align: center; margin-bottom: 32px; }
+    .role-intro .connexion-icon { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px; }
+    .role-intro h1 { font-size: 1.4rem; margin-bottom: 6px; }
+
+    .role-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 640px) { .role-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .role-card {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+      text-align: left; border: none; cursor: pointer; width: 100%;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+      font-family: var(--font-body);
+    }
+    .role-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.1); }
+    .role-card-icon { font-size: 2rem; margin-bottom: 4px; }
+    .role-card h2 { font-size: 1.1rem; margin: 0; }
+    .role-card p { font-size: 0.88rem; margin: 0 0 12px; }
+    .role-card-cta { margin-top: auto; width: 100%; }
+  </style>
+{% endblock %}

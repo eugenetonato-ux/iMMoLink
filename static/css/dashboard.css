@@ -1,0 +1,115 @@
+/* ==========================================================================
+   iMMoLink — Dashboards locataire / propriétaire (pas l'admin cpanel)
+   Hérite des tokens de style.css
+   ========================================================================== */
+
+.dashboard-shell {
+  display: flex;
+  min-height: calc(100vh - var(--header-height));
+}
+
+/* Nav secondaire du dashboard (onglets sous le header) */
+.dashboard-tabs {
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+.dashboard-tabs .container {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+.dashboard-tabs a {
+  padding: 14px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.dashboard-tabs a:hover { color: var(--color-text); }
+.dashboard-tabs a.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 28px 0 60px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.dashboard-header h1 { font-size: 1.4rem; margin: 0; }
+.dashboard-header .text-secondary { font-size: 0.9rem; }
+
+/* Grille de cartes chiffrées */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 18px 20px;
+}
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.stat-card .stat-value {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* Bloc profil incomplet / alerte */
+.profile-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: var(--radius-card);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.profile-alert p { margin: 0; font-size: 0.9rem; }
+
+/* Liste / grille de contenu dashboard générique */
+.dashboard-section { margin-bottom: 32px; }
+.dashboard-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.dashboard-section-title h2 { font-size: 1.1rem; margin: 0; }
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+.empty-state h3 { color: var(--color-text); margin-bottom: 6px; }
+
+@media (max-width: 640px) {
+  .dashboard-tabs .container { padding: 0 12px; }
+}

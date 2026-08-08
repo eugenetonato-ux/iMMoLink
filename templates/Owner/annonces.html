@@ -1,0 +1,84 @@
+{% extends "Base/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Mes annonces — iMMoLink{% endblock %}
+{% block dashboard_title %}Mes annonces{% endblock %}
+{% block dashboard_subtitle %}<p class="text-secondary">{{ annonces|length }} annonce{{ annonces|length|pluralize }}</p>{% endblock %}
+
+{% block dashboard_header_actions %}
+  <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary">+ Nouvelle annonce</a>
+{% endblock %}
+
+{% block dashboard_content %}
+  {% if annonces %}
+    <div class="annonces-grid">
+      {% for annonce in annonces %}
+        <div class="card annonce-manage-card">
+          <div class="annonce-manage-photo">
+            {% if annonce.photo_principale %}
+              <img src="{{ annonce.photo_principale.url }}" alt="">
+            {% else %}
+              <div class="annonce-manage-photo-placeholder"><i class="fa-solid fa-house"></i></div>
+            {% endif %}
+            <span class="badge badge-{% if annonce.statut == 'publiee' %}success{% elif annonce.statut == 'en_attente_validation' %}warning{% elif annonce.statut == 'refusee' or annonce.statut == 'suspendue' %}error{% else %}neutral{% endif %} annonce-manage-badge">
+              {{ annonce.get_statut_display }}
+            </span>
+          </div>
+          <div class="annonce-manage-body">
+            <h3>{{ annonce.titre|default:"Sans titre" }}</h3>
+            <p class="text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }}</p>
+            <p class="price">{{ annonce.prix|floatformat:"0" }} <span class="text-secondary">/ {{ annonce.get_periodicite_display }}</span></p>
+
+            {% if annonce.statut == "refusee" and annonce.motif_refus %}
+              <p class="annonce-manage-motif"><i class="fa-solid fa-circle-exclamation"></i> {{ annonce.motif_refus }}</p>
+            {% endif %}
+
+            <div class="annonce-manage-actions">
+              {% if annonce.statut == "brouillon" or annonce.statut == "refusee" %}
+                <a href="{% url 'owner:annonce_modifier' annonce.pk %}" class="btn btn-outline btn-sm">Modifier</a>
+                <form method="post" action="{% url 'owner:annonce_envoyer_validation' annonce.pk %}" style="display:inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary btn-sm">Envoyer pour validation</button>
+                </form>
+                <form method="post" action="{% url 'owner:annonce_supprimer' annonce.pk %}" style="display:inline;" onsubmit="return confirm('Supprimer cette annonce ?');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline btn-sm annonce-manage-delete">Supprimer</button>
+                </form>
+              {% elif annonce.statut == "publiee" %}
+                <a href="{% url 'website:annonce_detail' annonce.pk %}" class="btn btn-outline btn-sm">Voir l'annonce</a>
+              {% else %}
+                <span class="text-secondary annonce-manage-wait">En cours d'examen par l'équipe iMMoLink</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>Aucune annonce pour le moment</h3>
+      <p>Publie ton premier logement pour commencer à recevoir des demandes.</p>
+      <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary" style="margin-top: 12px;">Publier un logement</a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .annonces-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .annonces-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .annonces-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .annonce-manage-card { padding: 0; overflow: hidden; }
+    .annonce-manage-photo { position: relative; aspect-ratio: 4/3; background: var(--color-bg-soft); }
+    .annonce-manage-photo img { width: 100%; height: 100%; object-fit: cover; }
+    .annonce-manage-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--color-text-secondary); }
+    .annonce-manage-badge { position: absolute; top: 10px; left: 10px; }
+    .annonce-manage-body { padding: 16px; }
+    .annonce-manage-body h3 { font-size: 1rem; margin-bottom: 2px; }
+    .annonce-manage-motif { font-size: 0.8rem; color: var(--color-error); background: rgba(239,68,68,0.08); padding: 6px 10px; border-radius: 8px; margin: 8px 0 0; }
+    .annonce-manage-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .annonce-manage-delete { color: var(--color-error); border-color: var(--color-error); }
+    .annonce-manage-wait { font-size: 0.82rem; }
+  </style>
+{% endblock %}

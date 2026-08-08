@@ -1,0 +1,298 @@
+/* ==========================================================================
+   iMMoLink — Design tokens (site public + espaces locataire/propriétaire)
+   Source : iMMoLink_skills-design.md
+   ========================================================================== */
+
+:root {
+  /* Couleurs — bleu marine / vert sarcelle du dégradé réel du logo iMMoLink */
+  --color-primary: #1D7A74;
+  --color-primary-dark: #123A4A;
+  --color-accent: #F59E0B;
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-bg: #FFFFFF;
+  --color-bg-soft: #F9FAFB;
+  --color-text: #111827;
+  --color-text-secondary: #6B7280;
+  --color-border: #E5E7EB;
+
+  /* Typographie */
+  --font-display: "Sora", "Poppins", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Rayons / ombres */
+  --radius-btn: 12px;
+  --radius-card: 18px;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+  /* Rythme */
+  --header-height: 72px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg-soft);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 0.5em;
+}
+
+a { color: inherit; text-decoration: none; }
+
+img { max-width: 100%; display: block; }
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --------------------------------------------------------------------
+   Boutons
+   -------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.05s ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #FFFFFF;
+}
+.btn-primary:hover { background: var(--color-primary-dark); }
+
+.btn-accent {
+  background: var(--color-accent);
+  color: #FFFFFF;
+}
+.btn-accent:hover { filter: brightness(0.94); }
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+.btn-outline:hover { background: rgba(29, 122, 116, 0.08); }
+
+.btn-success {
+  background: var(--color-success);
+  color: #FFFFFF;
+}
+.btn-success:hover { filter: brightness(0.95); }
+
+.btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+.btn-block { width: 100%; }
+
+/* --------------------------------------------------------------------
+   Cartes
+   -------------------------------------------------------------------- */
+.card {
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 20px;
+}
+
+/* --------------------------------------------------------------------
+   Badges de statut
+   -------------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge-success { background: rgba(16, 185, 129, 0.12); color: var(--color-success); }
+.badge-warning { background: rgba(245, 158, 11, 0.12); color: #B45309; }
+.badge-error   { background: rgba(239, 68, 68, 0.12); color: var(--color-error); }
+.badge-neutral { background: rgba(107, 114, 128, 0.12); color: var(--color-text-secondary); }
+
+/* --------------------------------------------------------------------
+   Header (site public)
+   -------------------------------------------------------------------- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--header-height);
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+.site-header .container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--color-primary-dark);
+  flex-shrink: 0;
+}
+.brand-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
+.header-search {
+  flex: 1;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 6px 10px;
+}
+.header-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  width: 100%;
+  color: var(--color-text);
+}
+.header-search input::placeholder { color: var(--color-text-secondary); }
+.header-search .fa-magnifying-glass { color: var(--color-text-secondary); font-size: 0.85rem; }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.favorites-icon {
+  position: relative;
+  font-size: 1.25rem;
+  color: var(--color-text);
+}
+.favorites-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.user-menu img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* --------------------------------------------------------------------
+   Footer (site public)
+   -------------------------------------------------------------------- */
+.site-footer {
+  background: var(--color-primary-dark);
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 60px;
+  padding: 40px 0 24px;
+  font-size: 0.9rem;
+}
+.site-footer .footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+.site-footer h4 { color: #fff; font-size: 0.95rem; }
+.site-footer a { color: rgba(255, 255, 255, 0.75); }
+.site-footer a:hover { color: #fff; }
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 16px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* --------------------------------------------------------------------
+   Messages / toasts Django
+   -------------------------------------------------------------------- */
+.messages { list-style: none; margin: 16px 0 0; padding: 0; }
+.messages li {
+  padding: 12px 16px;
+  border-radius: var(--radius-btn);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.messages .success { background: rgba(16, 185, 129, 0.1); color: #047857; }
+.messages .error   { background: rgba(239, 68, 68, 0.1); color: #B91C1C; }
+.messages .warning { background: rgba(245, 158, 11, 0.1); color: #B45309; }
+.messages .info    { background: rgba(29, 122, 116, 0.1); color: var(--color-primary-dark); }
+
+/* --------------------------------------------------------------------
+   Utilitaires
+   -------------------------------------------------------------------- */
+.text-secondary { color: var(--color-text-secondary); }
+.price { font-weight: 700; }
+.price::after { content: " XOF"; font-weight: 600; font-size: 0.85em; }
+
+@media (max-width: 768px) {
+  .header-search { display: none; }
+  .brand span.brand-text { display: none; }
+}

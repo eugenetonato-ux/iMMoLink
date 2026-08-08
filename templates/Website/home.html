@@ -1,0 +1,236 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block title %}iMMoLink — Trouvez votre logement au Bénin{% endblock %}
+
+{% block content %}
+
+  <!-- ============================================================
+       Bannière héro
+       ============================================================ -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <h1 class="hero-title">Trouvez votre prochain logement au Bénin</h1>
+        <p class="hero-subtitle">Chambres, studios, appartements et maisons — annonces vérifiées, contact sécurisé.</p>
+
+        <form class="hero-search card" action="{% url 'website:recherche' %}" method="get">
+          <div class="hero-search-row">
+            <div class="field">
+              <label for="ville">Ville</label>
+              <select name="ville" id="ville">
+                <option value="">Toutes les villes</option>
+                {% for ville in villes %}
+                  <option value="{{ ville.slug }}">{{ ville.nom }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="field">
+              <label for="quartier">Quartier</label>
+              <input type="text" name="quartier" id="quartier" placeholder="Quartier">
+            </div>
+            <div class="field">
+              <label for="type">Type</label>
+              <select name="type" id="type">
+                <option value="">Tous types</option>
+                <option value="chambre">Chambre</option>
+                <option value="studio">Studio</option>
+                <option value="appartement">Appartement</option>
+                <option value="maison">Maison</option>
+                <option value="villa">Villa</option>
+              </select>
+            </div>
+            <div class="field field-sm">
+              <label for="prix_min">Prix min</label>
+              <input type="number" name="prix_min" id="prix_min" placeholder="XOF">
+            </div>
+            <div class="field field-sm">
+              <label for="prix_max">Prix max</label>
+              <input type="number" name="prix_max" id="prix_max" placeholder="XOF">
+            </div>
+            <div class="field field-sm">
+              <label for="chambres">Chambres</label>
+              <select name="chambres" id="chambres">
+                <option value="">Indifférent</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary hero-search-submit"><i class="fa-solid fa-magnifying-glass"></i> Trouver un logement</button>
+          </div>
+        </form>
+
+        <div class="hero-ctas">
+          <a href="{% url 'website:recherche' %}" class="btn btn-outline">Trouver un logement</a>
+          <a href="{% url 'accounts:connexion' %}" class="btn btn-accent">Publier un logement</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <img src="{% static 'images/accueil.jpeg' %}" alt="iMMoLink" class="hero-visual-img">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Villes / quartiers populaires
+       ============================================================ -->
+  {% if villes_populaires %}
+  <section class="section">
+    <div class="container">
+      <div class="dashboard-section-title">
+        <h2>Villes populaires</h2>
+      </div>
+      <div class="cities-row">
+        {% for ville in villes_populaires %}
+          <a href="{% url 'website:recherche' %}?ville={{ ville.slug }}" class="city-card">
+            {% if ville.photo %}
+              <img src="{{ ville.photo.url }}" alt="{{ ville.nom }}">
+            {% endif %}
+            <div class="city-card-overlay">
+              <span class="city-card-name">{{ ville.nom }}</span>
+              <span class="city-card-count">{{ ville.nb_annonces }} annonce{{ ville.nb_annonces|pluralize }}</span>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- ============================================================
+       Grille d'annonces récentes
+       ============================================================ -->
+  <section class="section">
+    <div class="container">
+      <div class="dashboard-section-title">
+        <h2>Dernières annonces</h2>
+        <a href="{% url 'website:recherche' %}" class="text-secondary">Voir tout →</a>
+      </div>
+
+      {% if annonces %}
+        <div class="listing-grid">
+          {% for annonce in annonces %}
+            {% include "Website/_annonce_card.html" with annonce=annonce %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <h3>Aucune annonce publiée pour le moment</h3>
+          <p>Reviens bientôt, de nouveaux logements sont ajoutés régulièrement.</p>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .hero {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: 48px 0 56px;
+      color: var(--color-text);
+      overflow: hidden;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 36px;
+      align-items: center;
+    }
+    @media (min-width: 960px) {
+      .hero-inner { grid-template-columns: 1.15fr 0.85fr; }
+    }
+    .hero-title {
+      color: var(--color-text);
+      font-size: 2.1rem;
+      margin-bottom: 0.3em;
+    }
+    .hero-subtitle {
+      color: var(--color-text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 28px;
+      max-width: 520px;
+    }
+    .hero-visual { display: none; }
+    @media (min-width: 760px) {
+      .hero-visual { display: block; }
+    }
+    .hero-visual-img {
+      width: 100%;
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      object-fit: cover;
+      aspect-ratio: 1 / 1;
+    }
+    .hero-search { padding: 16px; border: 1px solid var(--color-border); background: var(--color-bg-soft); }
+    .hero-search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+    }
+    .field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 150px; }
+    .field-sm { flex: 1 1 110px; }
+    .field label { font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); }
+    .field input, .field select {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--color-text);
+      background: var(--color-bg);
+    }
+    .hero-search-submit { flex: 1 1 100%; margin-top: 4px; }
+    .hero-ctas { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+
+    .section { padding: 40px 0; }
+
+    .cities-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .city-card {
+      position: relative;
+      display: block;
+      height: 120px;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      background: var(--color-primary-dark);
+    }
+    .city-card img { width: 100%; height: 100%; object-fit: cover; }
+    .city-card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0) 55%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+      color: #fff;
+    }
+    .city-card-name { font-weight: 700; }
+    .city-card-count { font-size: 0.75rem; opacity: 0.85; }
+
+    .listing-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 640px) { .listing-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .listing-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1280px) { .listing-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    @media (max-width: 640px) {
+      .hero { padding: 36px 0 44px; }
+      .hero-title { font-size: 1.5rem; }
+      .hero-search-row { flex-direction: column; align-items: stretch; }
+    }
+  </style>
+{% endblock %}

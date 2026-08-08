@@ -1,0 +1,58 @@
+{% extends "Base/base_admin.html" %}
+{% load static %}
+
+{% block title %}Utilisateurs — iMMoLink Admin{% endblock %}
+{% block page_title %}Utilisateurs{% endblock %}
+{% block page_subtitle %}Locataires et propriétaires inscrits sur la plateforme.{% endblock %}
+
+{% block content %}
+  <div class="admin-filters" style="margin-bottom: 18px;">
+    <a href="?role=" class="{% if not role_filtre %}active{% endif %}">Tous</a>
+    <a href="?role=locataire" class="{% if role_filtre == 'locataire' %}active{% endif %}">Locataires</a>
+    <a href="?role=proprietaire" class="{% if role_filtre == 'proprietaire' %}active{% endif %}">Propriétaires</a>
+  </div>
+
+  <div class="admin-card">
+    {% if utilisateurs %}
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Inscrit le</th><th></th></tr>
+          </thead>
+          <tbody>
+            {% for utilisateur in utilisateurs %}
+              <tr>
+                <td>{{ utilisateur.get_full_name|default:"—" }}</td>
+                <td>{{ utilisateur.email }}</td>
+                <td>{{ utilisateur.get_role_display|default:"Non défini" }}</td>
+                <td>
+                  <span class="admin-badge admin-badge-{% if utilisateur.is_active %}success{% else %}error{% endif %}">
+                    {% if utilisateur.is_active %}Actif{% else %}Suspendu{% endif %}
+                  </span>
+                </td>
+                <td>{{ utilisateur.date_joined|date:"d/m/Y" }}</td>
+                <td>
+                  <div class="admin-table-actions">
+                    {% if utilisateur.is_active %}
+                      <form method="post" action="{% url 'adminpanel:utilisateur_suspendre' utilisateur.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="admin-btn admin-btn-error">Suspendre</button>
+                      </form>
+                    {% else %}
+                      <form method="post" action="{% url 'adminpanel:utilisateur_reactiver' utilisateur.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="admin-btn admin-btn-success">Réactiver</button>
+                      </form>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="admin-empty">Aucun utilisateur dans cette catégorie.</p>
+    {% endif %}
+  </div>
+{% endblock %}

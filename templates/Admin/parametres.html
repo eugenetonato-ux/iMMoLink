@@ -1,0 +1,29 @@
+{% extends "Base/base_admin.html" %}
+{% load static %}
+
+{% block title %}Paramètres — iMMoLink Admin{% endblock %}
+{% block page_title %}Paramètres plateforme{% endblock %}
+{% block page_subtitle %}Frais de mise en relation et méthodes de paiement actives.{% endblock %}
+
+{% block content %}
+  <div class="admin-card" style="padding: 24px; max-width: 480px;">
+    <form method="post">
+      {% csrf_token %}
+      <div class="admin-form-field">
+        <label for="frais_contact">Frais de mise en relation (XOF)</label>
+        <input type="number" name="frais_contact" id="frais_contact" min="0" step="100" value="{{ config.frais_contact|floatformat:'0' }}">
+      </div>
+
+      <label class="admin-toggle">
+        <input type="checkbox" name="moov_money_actif" {% if config.moov_money_actif %}checked{% endif %}>
+        Moov Money actif
+      </label>
+      <label class="admin-toggle">
+        <input type="checkbox" name="mtn_money_actif" {% if config.mtn_money_actif %}checked{% endif %}>
+        MTN Money actif
+      </label>
+
+      <button type="submit" class="admin-btn admin-btn-primary" style="margin-top: 10px;">Enregistrer</button>
+    </form>
+  </div>
+{% endblock %}

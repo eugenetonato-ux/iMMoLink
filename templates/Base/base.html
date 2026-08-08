@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}iMMoLink — Location immobilière au Bénin{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Trouvez ou publiez un logement au Bénin en toute confiance : logements vérifiés, contact sécurisé.{% endblock %}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  {% csrf_token %}
+
+  <header class="site-header">
+    <div class="container">
+      <a href="{% url 'website:home' %}" class="brand">
+        <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="brand-icon">
+        <span class="brand-text">iMMoLink</span>
+      </a>
+
+      <form class="header-search" action="{% url 'website:recherche' %}" method="get">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="text" name="q" placeholder="Ville, quartier…" value="{{ request.GET.q }}">
+      </form>
+
+      <div class="header-actions">
+        {% if request.user.is_authenticated and request.user.role == "proprietaire" %}
+          <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-outline btn-sm">Publier un logement</a>
+        {% elif not request.user.is_authenticated %}
+          <a href="{% url 'accounts:connexion' %}" class="btn btn-outline btn-sm">Publier un logement</a>
+        {% endif %}
+
+        {% if request.user.is_authenticated %}
+          {% if request.user.role == "locataire" %}
+            <a href="{% url 'tenant:favoris' %}" class="favorites-icon" aria-label="Mes favoris">
+              <i class="fa-solid fa-heart"></i>
+              {% if favoris_count %}<span class="favorites-badge">{{ favoris_count }}</span>{% endif %}
+            </a>
+          {% endif %}
+          <a href="{% if request.user.role == 'proprietaire' %}{% url 'owner:owner_dashboard' %}{% elif request.user.role == 'locataire' %}{% url 'tenant:tenant_dashboard' %}{% else %}{% url 'accounts:choix_role' %}{% endif %}" class="user-menu">
+            {% if request.user.photo %}
+              <img src="{{ request.user.photo.url }}" alt="">
+            {% endif %}
+            <span>{{ request.user.first_name|default:request.user.email }}</span>
+          </a>
+          <a href="{% url 'accounts:deconnexion' %}" class="btn btn-sm btn-outline">Déconnexion</a>
+        {% else %}
+          <a href="{% url 'accounts:connexion' %}" class="btn btn-primary btn-sm">Se connecter avec Google</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% if messages %}
+      <div class="container">
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <h4>iMMoLink</h4>
+          <p class="text-secondary" style="color: rgba(255,255,255,0.75);">
+            Logements vérifiés, contactez le propriétaire en toute sécurité — Bénin.
+          </p>
+        </div>
+        <div>
+          <h4>Locataires</h4>
+          <p><a href="{% url 'website:logements' %}">Rechercher un logement</a></p>
+          <p><a href="{% if request.user.role == 'locataire' %}{% url 'tenant:favoris' %}{% else %}{% url 'accounts:connexion' %}{% endif %}">Mes favoris</a></p>
+        </div>
+        <div>
+          <h4>Propriétaires</h4>
+          <p><a href="{% if request.user.role == 'proprietaire' %}{% url 'owner:annonce_nouvelle' %}{% else %}{% url 'accounts:connexion' %}{% endif %}">Publier un logement</a></p>
+        </div>
+        <div>
+          <h4>Plateforme</h4>
+          <p><a href="{% url 'website:home' %}">À propos</a></p>
+          <p><a href="#">Contact</a></p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; {% now "Y" %} iMMoLink — Bénin</span>
+        <span>Paiement sécurisé Moov Money / MTN Money</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{% static 'js/script.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

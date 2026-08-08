@@ -1,0 +1,247 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block title %}iMMoLink — Votre logement, votre propriétaire, une connexion simplifiée{% endblock %}
+{% block meta_description %}iMMoLink est une plateforme digitale dédiée à la location immobilière au Bénin, qui facilite la mise en relation entre locataires et propriétaires.{% endblock %}
+
+{% block content %}
+
+  <!-- ============================================================
+       En-tête de page
+       ============================================================ -->
+  <section class="apropos-hero">
+    <div class="container">
+      <p class="apropos-eyebrow">À propos de iMMoLink</p>
+      <h1 class="apropos-title">Votre logement. Votre propriétaire.<br>Une connexion simplifiée.</h1>
+      <p class="apropos-lead">
+        iMMoLink est une plateforme digitale dédiée à la location immobilière, conçue pour faciliter la
+        mise en relation entre les personnes à la recherche d'un logement et les propriétaires qui
+        souhaitent proposer leurs biens.
+      </p>
+      <p class="apropos-lead">
+        Notre objectif est simple : rendre la recherche et la mise en location plus accessibles,
+        plus rapides et plus transparentes.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Sections thématiques
+       ============================================================ -->
+  <section class="section apropos-sections">
+    <div class="container">
+
+      <div class="apropos-block">
+        <div class="apropos-block-icon"><i class="fa-solid fa-house"></i></div>
+        <div class="apropos-block-body">
+          <h2>Trouvez le logement qui vous correspond</h2>
+          <p>
+            Grâce à iMMoLink, les locataires peuvent rechercher facilement des logements selon leurs
+            besoins, leur budget et leur localisation.
+          </p>
+          <p>
+            Chambres, studios, appartements, maisons ou autres types de logements : consultez les
+            annonces, découvrez les photos, les équipements, la localisation et les informations
+            essentielles avant de prendre contact.
+          </p>
+        </div>
+      </div>
+
+      <div class="apropos-block">
+        <div class="apropos-block-icon"><i class="fa-solid fa-handshake"></i></div>
+        <div class="apropos-block-body">
+          <h2>Une meilleure connexion entre propriétaires et locataires</h2>
+          <p>
+            iMMoLink permet aux propriétaires de présenter leurs logements sur une plateforme moderne
+            et organisée.
+          </p>
+          <p>
+            Ils peuvent publier leurs annonces, ajouter des photos, renseigner les caractéristiques du
+            logement, indiquer sa localisation et gérer sa disponibilité.
+          </p>
+          <p>
+            Les locataires disposent ainsi d'informations plus claires pour identifier les logements
+            qui correspondent réellement à leurs besoins.
+          </p>
+        </div>
+      </div>
+
+      <div class="apropos-block">
+        <div class="apropos-block-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+        <div class="apropos-block-body">
+          <h2>La technologie au service de l'immobilier</h2>
+          <p>
+            Avec la recherche par localisation et la cartographie, iMMoLink facilite la découverte des
+            logements disponibles dans les zones qui intéressent les utilisateurs.
+          </p>
+          <p>
+            Notre plateforme est pensée pour offrir une expérience simple, intuitive et adaptée aux
+            smartphones comme aux ordinateurs.
+          </p>
+        </div>
+      </div>
+
+      <div class="apropos-block">
+        <div class="apropos-block-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <div class="apropos-block-body">
+          <h2>La confiance et la sécurité au cœur de notre plateforme</h2>
+          <p>
+            Nous accordons une importance particulière à la sécurité des utilisateurs et à la
+            fiabilité des annonces.
+          </p>
+          <p>
+            Les annonces peuvent être soumises à un processus de vérification avant leur publication.
+            Les propriétaires et les utilisateurs disposent également d'un environnement sécurisé pour
+            gérer leurs informations et leurs interactions.
+          </p>
+          <p>
+            Les coordonnées personnelles des propriétaires ne sont pas exposées publiquement sans
+            autorisation. Lorsqu'un système de mise en relation payant est activé, le déblocage des
+            coordonnées intervient uniquement après confirmation du paiement.
+          </p>
+        </div>
+      </div>
+
+      <div class="apropos-block">
+        <div class="apropos-block-icon"><i class="fa-solid fa-credit-card"></i></div>
+        <div class="apropos-block-body">
+          <h2>Une mise en relation simple et transparente</h2>
+          <p>
+            iMMoLink intègre un système de paiement permettant, lorsque cela est applicable, de régler
+            les frais nécessaires à la mise en relation avec un propriétaire.
+          </p>
+          <p>
+            Chaque transaction est enregistrée afin de permettre un meilleur suivi et une expérience
+            plus transparente.
+          </p>
+        </div>
+      </div>
+
+      <div class="apropos-block">
+        <div class="apropos-block-icon"><i class="fa-solid fa-rocket"></i></div>
+        <div class="apropos-block-body">
+          <h2>Notre vision</h2>
+          <p>
+            Nous voulons construire une plateforme immobilière moderne qui évolue avec les besoins de
+            ses utilisateurs.
+          </p>
+          <p>
+            À travers iMMoLink, notre ambition est de contribuer à une nouvelle manière de rechercher,
+            présenter et louer des logements grâce à la technologie.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============================================================
+       Citation de clôture
+       ============================================================ -->
+  <section class="apropos-quote">
+    <div class="container">
+      <p>iMMoLink, c'est plus qu'une plateforme de location.</p>
+      <p class="apropos-quote-strong">C'est un lien entre un logement et la personne qui le recherche.</p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CTA finale
+       ============================================================ -->
+  <section class="apropos-cta">
+    <div class="container apropos-cta-inner">
+      <div>
+        <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="apropos-cta-icon-wrap">
+        <h2>iMMoLink</h2>
+        <p>Trouvez. Connectez-vous. Louez.</p>
+      </div>
+      <div class="apropos-cta-actions">
+        <a href="{% url 'website:logements' %}" class="btn btn-primary">Trouver un logement</a>
+        <a href="{% url 'accounts:connexion' %}" class="btn btn-accent">Publier un logement</a>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .apropos-hero {
+      background: var(--color-bg);
+      border-bottom: 1px solid var(--color-border);
+      padding: 48px 0 40px;
+      text-align: center;
+    }
+    .apropos-eyebrow {
+      color: var(--color-primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+    .apropos-title {
+      font-size: 2rem;
+      max-width: 680px;
+      margin: 0 auto 20px;
+    }
+    .apropos-lead {
+      color: var(--color-text-secondary);
+      font-size: 1.05rem;
+      max-width: 640px;
+      margin: 0 auto 12px;
+      line-height: 1.6;
+    }
+
+    .apropos-sections { padding: 48px 0; }
+    .apropos-block {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 20px;
+      max-width: 760px;
+      margin: 0 auto 44px;
+    }
+    .apropos-block:last-child { margin-bottom: 0; }
+    .apropos-block-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: rgba(29, 122, 116, 0.08);
+      color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .apropos-block-body h2 { font-size: 1.2rem; margin-bottom: 12px; }
+    .apropos-block-body p { color: var(--color-text-secondary); line-height: 1.65; margin: 0 0 12px; }
+    .apropos-block-body p:last-child { margin-bottom: 0; }
+
+    .apropos-quote {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+      color: #fff;
+      padding: 56px 0;
+      text-align: center;
+    }
+    .apropos-quote p { font-size: 1.15rem; margin: 0 0 6px; color: rgba(255,255,255,0.9); }
+    .apropos-quote-strong { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem !important; color: #fff !important; }
+
+    .apropos-cta { padding: 56px 0 64px; }
+    .apropos-cta-inner {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+      gap: 28px;
+      background: var(--color-bg-soft);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 36px 40px;
+    }
+    .apropos-cta-icon-wrap { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px; }
+    .apropos-cta h2 { font-size: 1.3rem; margin-bottom: 4px; }
+    .apropos-cta p { color: var(--color-text-secondary); margin: 0; font-weight: 600; }
+    .apropos-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    @media (max-width: 640px) {
+      .apropos-title { font-size: 1.5rem; }
+      .apropos-block { grid-template-columns: 1fr; }
+      .apropos-cta-inner { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+{% endblock %}

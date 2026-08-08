@@ -1,0 +1,31 @@
+{% extends "Base/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}Mes favoris — iMMoLink{% endblock %}
+{% block dashboard_title %}Mes favoris{% endblock %}
+{% block dashboard_subtitle %}<p class="text-secondary">{{ annonces|length }} logement{{ annonces|length|pluralize }} enregistré{{ annonces|length|pluralize }}</p>{% endblock %}
+
+{% block dashboard_content %}
+  {% if annonces %}
+    <div class="listing-grid">
+      {% for annonce in annonces %}
+        {% include "Website/_annonce_card.html" with annonce=annonce %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>Aucun favori pour le moment</h3>
+      <p>Clique sur l'icône <i class="fa-regular fa-heart"></i> d'une annonce pour la retrouver ici facilement.</p>
+      <a href="{% url 'website:logements' %}" class="btn btn-primary" style="margin-top: 12px;">Rechercher un logement</a>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .listing-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    @media (min-width: 640px) { .listing-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 1024px) { .listing-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 1280px) { .listing-grid { grid-template-columns: repeat(4, 1fr); } }
+  </style>
+{% endblock %}
