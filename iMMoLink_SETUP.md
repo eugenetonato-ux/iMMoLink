@@ -407,7 +407,7 @@ python manage.py runserver
 ```
 
 - Site public : `http://127.0.0.1:8000/`
-- Espace locataire : `http://127.0.0.1:8000/espace-locataire/`
+- Espace locataire : `http://127.0.0.1:8000/django-admin/locations/ville/`
 - Espace propriétaire : `http://127.0.0.1:8000/espace-proprietaire/`
 - Espace admin : `http://127.0.0.1:8000/cpanel_administrateur/`
 
