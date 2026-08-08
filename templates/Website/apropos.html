@@ -1,149 +1,163 @@
 {% extends "Base/base.html" %}
 {% load static %}
 
-{% block title %}iMMoLink — Votre logement, votre propriétaire, une connexion simplifiée{% endblock %}
+{% block title %}iMMoLink — Nous connectons les propriétaires et les locataires en toute confiance{% endblock %}
 {% block meta_description %}iMMoLink est une plateforme digitale dédiée à la location immobilière au Bénin, qui facilite la mise en relation entre locataires et propriétaires.{% endblock %}
 
 {% block content %}
 
   <!-- ============================================================
-       En-tête de page
+       Hero : texte + photo
        ============================================================ -->
   <section class="apropos-hero">
+    <div class="container apropos-hero-grid">
+      <div class="apropos-hero-text">
+        <p class="eyebrow">À propos de iMMoLink</p>
+        <h1 class="apropos-title">
+          Nous connectons les propriétaires et les locataires en toute <span class="text-accent">confiance</span>.
+        </h1>
+        <p class="apropos-lead">
+          iMMoLink est une plateforme digitale dédiée à la location immobilière au Bénin. Nous
+          facilitons la mise en relation entre propriétaires et locataires grâce à une expérience
+          sécurisée, transparente et simple.
+        </p>
+        <p class="apropos-lead">
+          Notre mission est de rendre la recherche et la mise en location plus rapides, plus sûres et
+          accessibles à tous, partout au Bénin.
+        </p>
+      </div>
+
+      <div class="apropos-hero-media">
+        <img src="{% static 'images/apropos-immeuble.jpeg' %}" alt="Immeuble résidentiel au Bénin">
+        <div class="apropos-hero-media-overlay">
+          <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="apropos-hero-media-logo">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="container apropos-divider"><span></span></div>
+
+  <!-- ============================================================
+       Nos valeurs
+       ============================================================ -->
+  <section class="section apropos-values">
     <div class="container">
-      <p class="apropos-eyebrow">À propos de iMMoLink</p>
-      <h1 class="apropos-title">Votre logement. Votre propriétaire.<br>Une connexion simplifiée.</h1>
-      <p class="apropos-lead">
-        iMMoLink est une plateforme digitale dédiée à la location immobilière, conçue pour faciliter la
-        mise en relation entre les personnes à la recherche d'un logement et les propriétaires qui
-        souhaitent proposer leurs biens.
-      </p>
-      <p class="apropos-lead">
-        Notre objectif est simple : rendre la recherche et la mise en location plus accessibles,
-        plus rapides et plus transparentes.
-      </p>
+      <p class="eyebrow eyebrow-center">Nos valeurs</p>
+      <div class="values-grid">
+        <div class="value-card">
+          <div class="value-icon"><i class="fa-solid fa-shield-heart"></i></div>
+          <h3>Confiance</h3>
+          <p>Nous mettons la sécurité et la transparence au cœur de chaque interaction.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon"><i class="fa-solid fa-handshake"></i></div>
+          <h3>Connexion</h3>
+          <p>Nous créons des liens réels entre propriétaires et locataires.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon"><i class="fa-solid fa-file-circle-check"></i></div>
+          <h3>Transparence</h3>
+          <p>Des informations claires et fiables pour chaque location</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon"><i class="fa-solid fa-gem"></i></div>
+          <h3>Qualité</h3>
+          <p>Nous nous engageons à proposer des annonces vérifiées et un service fiable.</p>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- ============================================================
-       Sections thématiques
+       Bandeau statistiques
        ============================================================ -->
-  <section class="section apropos-sections">
-    <div class="container">
-
-      <div class="apropos-block">
-        <div class="apropos-block-icon"><i class="fa-solid fa-house"></i></div>
-        <div class="apropos-block-body">
-          <h2>Trouvez le logement qui vous correspond</h2>
-          <p>
-            Grâce à iMMoLink, les locataires peuvent rechercher facilement des logements selon leurs
-            besoins, leur budget et leur localisation.
-          </p>
-          <p>
-            Chambres, studios, appartements, maisons ou autres types de logements : consultez les
-            annonces, découvrez les photos, les équipements, la localisation et les informations
-            essentielles avant de prendre contact.
-          </p>
-        </div>
+  <section class="apropos-stats">
+    <div class="container stats-grid">
+      <div class="stat-item">
+        <span class="stat-icon"><i class="fa-solid fa-house"></i></span>
+        <span class="stat-value">28+</span>
+        <span class="stat-label">Logements disponibles</span>
       </div>
-
-      <div class="apropos-block">
-        <div class="apropos-block-icon"><i class="fa-solid fa-handshake"></i></div>
-        <div class="apropos-block-body">
-          <h2>Une meilleure connexion entre propriétaires et locataires</h2>
-          <p>
-            iMMoLink permet aux propriétaires de présenter leurs logements sur une plateforme moderne
-            et organisée.
-          </p>
-          <p>
-            Ils peuvent publier leurs annonces, ajouter des photos, renseigner les caractéristiques du
-            logement, indiquer sa localisation et gérer sa disponibilité.
-          </p>
-          <p>
-            Les locataires disposent ainsi d'informations plus claires pour identifier les logements
-            qui correspondent réellement à leurs besoins.
-          </p>
-        </div>
+      <div class="stat-item">
+        <span class="stat-icon"><i class="fa-solid fa-users"></i></span>
+        <span class="stat-value">120+</span>
+        <span class="stat-label">Utilisateurs actifs</span>
       </div>
-
-      <div class="apropos-block">
-        <div class="apropos-block-icon"><i class="fa-solid fa-map-location-dot"></i></div>
-        <div class="apropos-block-body">
-          <h2>La technologie au service de l'immobilier</h2>
-          <p>
-            Avec la recherche par localisation et la cartographie, iMMoLink facilite la découverte des
-            logements disponibles dans les zones qui intéressent les utilisateurs.
-          </p>
-          <p>
-            Notre plateforme est pensée pour offrir une expérience simple, intuitive et adaptée aux
-            smartphones comme aux ordinateurs.
-          </p>
-        </div>
+      <div class="stat-item">
+        <span class="stat-icon"><i class="fa-solid fa-handshake"></i></span>
+        <span class="stat-value">20+</span>
+        <span class="stat-label">Mises en relation réussies</span>
       </div>
-
-      <div class="apropos-block">
-        <div class="apropos-block-icon"><i class="fa-solid fa-shield-halved"></i></div>
-        <div class="apropos-block-body">
-          <h2>La confiance et la sécurité au cœur de notre plateforme</h2>
-          <p>
-            Nous accordons une importance particulière à la sécurité des utilisateurs et à la
-            fiabilité des annonces.
-          </p>
-          <p>
-            Les annonces peuvent être soumises à un processus de vérification avant leur publication.
-            Les propriétaires et les utilisateurs disposent également d'un environnement sécurisé pour
-            gérer leurs informations et leurs interactions.
-          </p>
-          <p>
-            Les coordonnées personnelles des propriétaires ne sont pas exposées publiquement sans
-            autorisation. Lorsqu'un système de mise en relation payant est activé, le déblocage des
-            coordonnées intervient uniquement après confirmation du paiement.
-          </p>
-        </div>
+      <div class="stat-item">
+        <span class="stat-icon"><i class="fa-solid fa-shield-halved"></i></span>
+        <span class="stat-value">100%</span>
+        <span class="stat-label">Frais de mise en relation sécurisés</span>
       </div>
-
-      <div class="apropos-block">
-        <div class="apropos-block-icon"><i class="fa-solid fa-credit-card"></i></div>
-        <div class="apropos-block-body">
-          <h2>Une mise en relation simple et transparente</h2>
-          <p>
-            iMMoLink intègre un système de paiement permettant, lorsque cela est applicable, de régler
-            les frais nécessaires à la mise en relation avec un propriétaire.
-          </p>
-          <p>
-            Chaque transaction est enregistrée afin de permettre un meilleur suivi et une expérience
-            plus transparente.
-          </p>
-        </div>
-      </div>
-
-      <div class="apropos-block">
-        <div class="apropos-block-icon"><i class="fa-solid fa-rocket"></i></div>
-        <div class="apropos-block-body">
-          <h2>Notre vision</h2>
-          <p>
-            Nous voulons construire une plateforme immobilière moderne qui évolue avec les besoins de
-            ses utilisateurs.
-          </p>
-          <p>
-            À travers iMMoLink, notre ambition est de contribuer à une nouvelle manière de rechercher,
-            présenter et louer des logements grâce à la technologie.
-          </p>
-        </div>
-      </div>
-
     </div>
   </section>
+
+  <div class="container apropos-divider"><span></span></div>
 
   <!-- ============================================================
-       Citation de clôture
+       Mission & vision
        ============================================================ -->
-  <section class="apropos-quote">
+  <section class="section apropos-mission">
     <div class="container">
-      <p>iMMoLink, c'est plus qu'une plateforme de location.</p>
-      <p class="apropos-quote-strong">C'est un lien entre un logement et la personne qui le recherche.</p>
+      <p class="eyebrow eyebrow-center">Notre engagement</p>
+      <h2 class="section-title">Notre mission &amp; notre vision</h2>
+
+      <div class="mission-grid">
+        <div class="mission-card">
+          <div class="mission-card-header">
+            <span class="mission-icon"><i class="fa-solid fa-bullseye"></i></span>
+            <h3>Notre mission</h3>
+          </div>
+          <p>
+            Faciliter l'accès à des logements de qualité en connectant propriétaires et locataires au
+            Bénin, dans un environnement sûr, équitable et transparent.
+          </p>
+          <p>
+            Nous simplifions chaque étape, de la recherche à la mise en relation, grâce à la
+            technologie et à un service centré sur l'humain.
+          </p>
+        </div>
+        <div class="mission-card">
+          <div class="mission-card-header">
+            <span class="mission-icon"><i class="fa-solid fa-binoculars"></i></span>
+            <h3>Notre vision</h3>
+          </div>
+          <p>
+            Devenir la plateforme de référence de la location immobilière au Bénin, en changeant la
+            façon dont les gens trouvent et proposent un logement.
+          </p>
+          <p>
+            Nous imaginons un avenir où chacun peut trouver le bon logement, au bon moment, au bon
+            prix, en toute sérénité, partout au Bénin.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
+
+  <div class="container apropos-divider"><span></span></div>
+
+  <!-- ============================================================
+       Citation
+       ============================================================ -->
+  <section class="section apropos-quote-section">
+    <div class="container">
+      <div class="quote-card">
+        <span class="quote-mark"><i class="fa-solid fa-quote-left"></i></span>
+        <p>
+          Chez <span class="text-brand-green">iMMoLink</span>, nous croyons qu'un logement n'est pas
+          seulement un lieu, mais le début d'une nouvelle histoire.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="container apropos-divider"><span></span></div>
 
   <!-- ============================================================
        CTA finale
@@ -151,7 +165,6 @@
   <section class="apropos-cta">
     <div class="container apropos-cta-inner">
       <div>
-        <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="apropos-cta-icon-wrap">
         <h2>iMMoLink</h2>
         <p>Trouvez. Connectez-vous. Louez.</p>
       </div>
@@ -165,14 +178,9 @@
 {% endblock %}
 
 {% block extra_css %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
-    .apropos-hero {
-      background: var(--color-bg);
-      border-bottom: 1px solid var(--color-border);
-      padding: 48px 0 40px;
-      text-align: center;
-    }
-    .apropos-eyebrow {
+    .eyebrow {
       color: var(--color-primary);
       font-weight: 700;
       font-size: 0.85rem;
@@ -180,51 +188,144 @@
       letter-spacing: 0.04em;
       margin-bottom: 10px;
     }
-    .apropos-title {
-      font-size: 2rem;
-      max-width: 680px;
-      margin: 0 auto 20px;
-    }
-    .apropos-lead {
-      color: var(--color-text-secondary);
-      font-size: 1.05rem;
-      max-width: 640px;
-      margin: 0 auto 12px;
-      line-height: 1.6;
-    }
+    .eyebrow-center { text-align: center; }
+    .section-title { text-align: center; font-size: 1.5rem; margin-bottom: 40px; }
+    .text-accent { color: var(--color-primary); }
+    .text-brand-green { color: var(--color-success); font-weight: 700; }
 
-    .apropos-sections { padding: 48px 0; }
-    .apropos-block {
+    /* ---------------- Hero ---------------- */
+    .apropos-hero { padding: 48px 0; }
+    .apropos-hero-grid {
       display: grid;
-      grid-template-columns: 56px 1fr;
-      gap: 20px;
-      max-width: 760px;
-      margin: 0 auto 44px;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: center;
     }
-    .apropos-block:last-child { margin-bottom: 0; }
-    .apropos-block-icon {
-      width: 56px; height: 56px;
-      border-radius: 16px;
-      background: rgba(29, 122, 116, 0.08);
-      color: var(--color-primary);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.4rem;
-      flex-shrink: 0;
+    @media (min-width: 900px) {
+      .apropos-hero-grid { grid-template-columns: 1fr 1fr; }
     }
-    .apropos-block-body h2 { font-size: 1.2rem; margin-bottom: 12px; }
-    .apropos-block-body p { color: var(--color-text-secondary); line-height: 1.65; margin: 0 0 12px; }
-    .apropos-block-body p:last-child { margin-bottom: 0; }
+    .apropos-title { font-size: 2rem; margin-bottom: 20px; }
+    .apropos-lead { color: var(--color-text-secondary); font-size: 1.02rem; line-height: 1.65; margin: 0 0 14px; }
 
-    .apropos-quote {
-      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-      color: #fff;
-      padding: 56px 0;
+    .apropos-hero-media {
+      position: relative;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+      aspect-ratio: 4 / 3;
+    }
+    .apropos-hero-media img:not(.apropos-hero-media-logo) { width: 100%; height: 100%; object-fit: cover; }
+    .apropos-hero-media-overlay {
+      position: absolute;
+      right: -8%;
+      bottom: -8%;
+      width: 50%;
+      height: 50%;
+      background: rgba(16, 185, 129, 0.82);
+      backdrop-filter: blur(1px);
+      border-radius: 40% 60% 55% 45% / 50% 45% 55% 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .apropos-hero-media-logo { width: 46%; height: auto; object-fit: contain; }
+
+    /* ---------------- Valeurs ---------------- */
+    .apropos-values { padding-top: 8px; }
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-top: 24px;
       text-align: center;
     }
-    .apropos-quote p { font-size: 1.15rem; margin: 0 0 6px; color: rgba(255,255,255,0.9); }
-    .apropos-quote-strong { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem !important; color: #fff !important; }
+    @media (min-width: 900px) { .values-grid { grid-template-columns: repeat(4, 1fr); } }
 
-    .apropos-cta { padding: 56px 0 64px; }
+    .value-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin: 0 auto 16px;
+    }
+    .value-card h3 { font-size: 1.05rem; margin-bottom: 8px; }
+    .value-card p { color: var(--color-text-secondary); font-size: 0.9rem; line-height: 1.55; margin: 0; }
+
+    /* ---------------- Stats ---------------- */
+    .apropos-stats {
+      background: var(--color-primary-dark);
+      color: #fff;
+      padding: 36px 0;
+      margin: 48px 0;
+      border-radius: var(--radius-card);
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      text-align: center;
+    }
+    @media (min-width: 900px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+    .stat-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .stat-icon { font-size: 1.3rem; color: rgba(255,255,255,0.85); }
+    .stat-value { font-family: var(--font-display); font-size: 1.7rem; font-weight: 700; color: var(--color-success); }
+    .stat-label { font-size: 0.82rem; color: rgba(255,255,255,0.8); }
+
+    /* ---------------- Mission / vision ---------------- */
+    .mission-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    @media (min-width: 768px) { .mission-grid { grid-template-columns: 1fr 1fr; } }
+    .mission-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      padding: 28px;
+    }
+    .mission-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .mission-icon {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--color-success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .mission-card-header h3 { font-size: 1.1rem; margin: 0; }
+    .mission-card p { color: var(--color-text-secondary); line-height: 1.6; margin: 0 0 10px; }
+    .mission-card p:last-child { margin-bottom: 0; }
+
+    /* ---------------- Citation ---------------- */
+    .apropos-quote-section { padding-top: 8px; }
+    .quote-card {
+      background: var(--color-bg-soft);
+      border-radius: var(--radius-card);
+      padding: 40px 32px;
+      text-align: center;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .quote-mark { font-size: 1.5rem; color: var(--color-success); display: block; margin-bottom: 8px; }
+    .quote-card p { font-family: var(--font-display); font-weight: 700; font-size: 1.2rem; color: var(--color-text); margin: 0; line-height: 1.5; }
+
+    /* ---------------- CTA ---------------- */
+    .apropos-cta { padding: 8px 0 64px; }
     .apropos-cta-inner {
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
       gap: 28px;
@@ -233,15 +334,29 @@
       border-radius: var(--radius-card);
       padding: 36px 40px;
     }
-    .apropos-cta-icon-wrap { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; margin-bottom: 10px; }
     .apropos-cta h2 { font-size: 1.3rem; margin-bottom: 4px; }
     .apropos-cta p { color: var(--color-text-secondary); margin: 0; font-weight: 600; }
     .apropos-cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
     @media (max-width: 640px) {
       .apropos-title { font-size: 1.5rem; }
-      .apropos-block { grid-template-columns: 1fr; }
       .apropos-cta-inner { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ---------------- Séparateurs entre sections ---------------- */
+    .apropos-divider {
+      display: flex;
+      justify-content: center;
+      padding: 28px 0;
+    }
+    .apropos-divider span {
+      width: 64px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--color-border);
+    }
+    @media (max-width: 900px) {
+      .apropos-divider { padding: 36px 0; }
     }
   </style>
 {% endblock %}

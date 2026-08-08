@@ -3,10 +3,11 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  {% block dashboard_extra_css %}{% endblock %}
 {% endblock %}
 
 {% block content %}
-  <nav class="dashboard-tabs">
+  <nav class="dashboard-tabs" aria-label="Navigation du tableau de bord">
     <div class="container">
       {% if request.user.role == "locataire" %}
         <a href="{% url 'tenant:tenant_dashboard' %}" class="{% if request.resolver_match.url_name == 'tenant_dashboard' %}active{% endif %}">Tableau de bord</a>

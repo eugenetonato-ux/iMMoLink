@@ -92,7 +92,6 @@
         </div>
 
         <div class="card trust-card">
-          <p><i class="fa-solid fa-lock"></i> Paiement sécurisé Moov Money / MTN Money</p>
           <p><i class="fa-solid fa-circle-check"></i> Logements vérifiés par l'équipe iMMoLink</p>
         </div>
       </aside>
@@ -107,10 +106,13 @@
     .detail-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 20px;
+    }
+    @media (max-width: 899.98px) {
+      .detail-sidebar { order: -1; }
     }
     @media (min-width: 900px) {
-      .detail-grid { grid-template-columns: 2fr 1fr; align-items: start; }
+      .detail-grid { grid-template-columns: 2fr 1fr; align-items: start; gap: 24px; }
     }
 
     .gallery { padding: 0; overflow: hidden; margin-bottom: 20px; }
@@ -119,16 +121,28 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 3rem; color: var(--color-text-secondary); background: var(--color-bg-soft);
     }
-    .gallery-thumbs { display: flex; gap: 8px; padding: 10px; overflow-x: auto; }
-    .gallery-thumb { width: 72px; height: 56px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+    .gallery-thumbs {
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    }
+    .gallery-thumbs::-webkit-scrollbar { display: none; }
+    .gallery-thumb { width: 72px; height: 56px; object-fit: cover; border-radius: 8px; flex-shrink: 0; scroll-snap-align: start; }
 
-    .detail-info { padding: 24px; }
+    .detail-info { padding: 18px; }
+    @media (min-width: 640px) { .detail-info { padding: 24px; } }
     .detail-info-top {
       display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
       margin-bottom: 16px;
     }
-    .detail-title { font-size: 1.5rem; margin: 8px 0 4px; }
-    .detail-price { font-size: 1.3rem; white-space: nowrap; }
+    .detail-title { font-size: clamp(1.2rem, 4.5vw, 1.5rem); margin: 8px 0 4px; }
+    .detail-price { font-size: clamp(1.1rem, 4vw, 1.3rem); white-space: nowrap; }
     .detail-meta {
       display: flex; gap: 18px; flex-wrap: wrap;
       font-size: 0.9rem; color: var(--color-text-secondary);
@@ -137,9 +151,13 @@
     }
     .detail-info h2 { font-size: 1.05rem; margin-top: 20px; }
     .detail-description { color: var(--color-text); font-size: 0.95rem; }
-    .amenities-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 16px; font-size: 0.9rem; }
+    .amenities-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr; gap: 8px 16px; font-size: 0.9rem; }
+    @media (min-width: 420px) { .amenities-list { grid-template-columns: repeat(2, 1fr); } }
 
-    .detail-sidebar { display: flex; flex-direction: column; gap: 16px; position: sticky; top: calc(var(--header-height) + 16px); }
+    .detail-sidebar { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+    @media (min-width: 900px) {
+      .detail-sidebar { position: sticky; top: calc(var(--header-height) + 16px); }
+    }
     .owner-card { padding: 20px; }
     .owner-card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
     .owner-photo { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }

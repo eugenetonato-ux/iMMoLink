@@ -109,7 +109,7 @@ def completer_profil_proprietaire(request):
         )
         if services.profil_proprietaire_complet(request.user):
             messages.success(request, "Profil complété — tu peux publier une annonce.")
-            return redirect("accounts:owner_dashboard")
+            return redirect("owner:owner_dashboard")
         messages.error(request, "Merci de compléter tous les champs obligatoires, y compris la photo de profil.")
 
     from apps.locations.models import Ville

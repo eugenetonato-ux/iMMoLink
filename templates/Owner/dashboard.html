@@ -5,26 +5,38 @@
 {% block dashboard_title %}Tableau de bord{% endblock %}
 
 {% block dashboard_header_actions %}
-  <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary">+ Nouvelle annonce</a>
+  <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nouvelle annonce</a>
 {% endblock %}
 
 {% block dashboard_content %}
-  <div class="stat-grid">
-    <div class="stat-card">
-      <span class="stat-label">Logements</span>
-      <div class="stat-value">{{ stats.total }}</div>
+  <div class="stat-grid owner-stat-grid">
+    <div class="stat-card owner-stat-card">
+      <span class="owner-stat-icon owner-stat-icon-primary"><i class="fa-solid fa-house"></i></span>
+      <div>
+        <span class="stat-label">Logements</span>
+        <div class="stat-value">{{ stats.total }}</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Publiées</span>
-      <div class="stat-value" style="color: var(--color-success);">{{ stats.publiees }}</div>
+    <div class="stat-card owner-stat-card">
+      <span class="owner-stat-icon owner-stat-icon-success"><i class="fa-solid fa-circle-check"></i></span>
+      <div>
+        <span class="stat-label">Publiées</span>
+        <div class="stat-value" style="color: var(--color-success);">{{ stats.publiees }}</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">En attente</span>
-      <div class="stat-value" style="color: var(--color-warning);">{{ stats.en_attente }}</div>
+    <div class="stat-card owner-stat-card">
+      <span class="owner-stat-icon owner-stat-icon-warning"><i class="fa-solid fa-hourglass-half"></i></span>
+      <div>
+        <span class="stat-label">En attente</span>
+        <div class="stat-value" style="color: var(--color-warning);">{{ stats.en_attente }}</div>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Refusées</span>
-      <div class="stat-value" style="color: var(--color-error);">{{ stats.refusees }}</div>
+    <div class="stat-card owner-stat-card">
+      <span class="owner-stat-icon owner-stat-icon-error"><i class="fa-solid fa-circle-xmark"></i></span>
+      <div>
+        <span class="stat-label">Refusées</span>
+        <div class="stat-value" style="color: var(--color-error);">{{ stats.refusees }}</div>
+      </div>
     </div>
   </div>
 
@@ -35,14 +47,17 @@
     </div>
 
     {% if dernieres_annonces %}
-      <div class="card owner-listing-table">
+      <div class="card listing-table">
         {% for annonce in dernieres_annonces %}
-          <div class="owner-listing-row">
-            <div class="owner-listing-info">
-              <span class="owner-listing-title">{{ annonce.titre }}</span>
-              <span class="text-secondary owner-listing-loc"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }} · <span class="price">{{ annonce.prix|floatformat:"0" }}</span>/{{ annonce.get_periodicite_display }}</span>
+          <div class="listing-table-row">
+            <div class="listing-table-info">
+              <span class="listing-table-title">{{ annonce.titre }}</span>
+              <span class="listing-table-loc">
+                <i class="fa-solid fa-location-dot"></i>
+                <span>{{ annonce.quartier }}, {{ annonce.ville }} · <span class="price">{{ annonce.prix|floatformat:"0" }}</span>/{{ annonce.get_periodicite_display }}</span>
+              </span>
             </div>
-            <span class="badge badge-{% if annonce.statut == 'publiee' %}success{% elif annonce.statut == 'en_attente_validation' %}warning{% elif annonce.statut == 'refusee' or annonce.statut == 'suspendue' %}error{% else %}neutral{% endif %}">
+            <span class="badge badge-{% if annonce.statut == 'publiee' %}success{% elif annonce.statut == 'en_attente_validation' %}warning{% elif annonce.statut == 'refusee' or annonce.statut == 'suspendue' %}error{% else %}neutral{% endif %} listing-table-badge">
               {{ annonce.get_statut_display }}
             </span>
           </div>
@@ -50,24 +65,50 @@
       </div>
     {% else %}
       <div class="empty-state">
+        <div class="empty-state-icon"><i class="fa-solid fa-house-circle-plus"></i></div>
         <h3>Aucune annonce pour le moment</h3>
         <p>Publie ton premier logement pour commencer à recevoir des demandes.</p>
-        <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary" style="margin-top: 12px;">Publier un logement</a>
+        <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary" style="margin-top: 16px;"><i class="fa-solid fa-plus"></i> Publier un logement</a>
       </div>
     {% endif %}
   </div>
 {% endblock %}
 
-{% block extra_css %}
+{% block dashboard_extra_css %}
   <style>
-    .owner-listing-table { padding: 6px 20px; }
-    .owner-listing-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      padding: 14px 0; border-bottom: 1px solid var(--color-border);
+    .owner-stat-grid { min-width: 0; }
+    .owner-stat-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .owner-listing-row:last-child { border-bottom: none; }
-    .owner-listing-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-    .owner-listing-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .owner-listing-loc { font-size: 0.82rem; }
+    .owner-stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.08); }
+    .owner-stat-card > div { min-width: 0; }
+    .owner-stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .owner-stat-icon-primary { background: rgba(37, 99, 235, 0.1); color: var(--color-primary); }
+    .owner-stat-icon-success { background: rgba(16, 185, 129, 0.1); color: var(--color-success); }
+    .owner-stat-icon-warning { background: rgba(245, 158, 11, 0.1); color: var(--color-warning); }
+    .owner-stat-icon-error { background: rgba(239, 68, 68, 0.1); color: var(--color-error); }
+
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: rgba(37, 99, 235, 0.08);
+      color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 16px;
+    }
   </style>
 {% endblock %}

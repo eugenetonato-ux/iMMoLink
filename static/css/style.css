@@ -1,12 +1,15 @@
 /* ==========================================================================
    iMMoLink — Design tokens (site public + espaces locataire/propriétaire)
    Source : iMMoLink_skills-design.md
+   Mobile-first : le layout de base cible le mobile, les media queries
+   (min-width) ajoutent la mise en page tablette / desktop.
    ========================================================================== */
 
 :root {
   /* Couleurs — bleu marine / vert sarcelle du dégradé réel du logo iMMoLink */
   --color-primary: #1D7A74;
   --color-primary-dark: #123A4A;
+  --color-primary-light: #E6F2F1;
   --color-accent: #F59E0B;
   --color-success: #10B981;
   --color-warning: #F59E0B;
@@ -25,12 +28,35 @@
   --radius-btn: 12px;
   --radius-card: 18px;
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-elevated: 0 12px 32px rgba(18, 58, 74, 0.14);
+
+  /* Échelle d'espacement — utilisée pour aérer les pages, surtout mobile */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
 
   /* Rythme */
-  --header-height: 72px;
+  --header-height: 64px;
+  --container-padding: 16px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --header-height: 72px;
+    --container-padding: 20px;
+  }
 }
 
 * { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
 
 html, body {
   margin: 0;
@@ -39,25 +65,49 @@ html, body {
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
+
+body.menu-open { overflow: hidden; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 700;
   color: var(--color-text);
   margin: 0 0 0.5em;
+  line-height: 1.25;
 }
+
+h1 { font-size: clamp(1.5rem, 4vw, 2.25rem); }
+h2 { font-size: clamp(1.2rem, 2.6vw, 1.5rem); }
 
 a { color: inherit; text-decoration: none; }
 
 img { max-width: 100%; display: block; }
 
+button { font-family: var(--font-body); }
+
+/* Focus clavier visible partout — accessibilité */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
 .container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--container-padding);
+}
+
+main {
+  display: block;
+  padding-bottom: var(--space-6);
 }
 
 /* --------------------------------------------------------------------
@@ -68,14 +118,15 @@ img { max-width: 100%; display: block; }
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 10px 20px;
+  padding: 12px 20px;
+  min-height: 44px;
   border-radius: var(--radius-btn);
   font-family: var(--font-body);
   font-weight: 600;
   font-size: 0.95rem;
   border: none;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.05s ease;
+  transition: filter 0.15s ease, transform 0.05s ease, box-shadow 0.15s ease, background-color 0.15s ease;
   white-space: nowrap;
 }
 .btn:active { transform: translateY(1px); }
@@ -83,8 +134,9 @@ img { max-width: 100%; display: block; }
 .btn-primary {
   background: var(--color-primary);
   color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(29, 122, 116, 0.28);
 }
-.btn-primary:hover { background: var(--color-primary-dark); }
+.btn-primary:hover { background: var(--color-primary-dark); box-shadow: 0 6px 18px rgba(18, 58, 74, 0.3); }
 
 .btn-accent {
   background: var(--color-accent);
@@ -105,7 +157,7 @@ img { max-width: 100%; display: block; }
 }
 .btn-success:hover { filter: brightness(0.95); }
 
-.btn-sm { padding: 6px 14px; font-size: 0.85rem; }
+.btn-sm { padding: 8px 16px; min-height: 38px; font-size: 0.85rem; }
 .btn-block { width: 100%; }
 
 /* --------------------------------------------------------------------
@@ -115,7 +167,7 @@ img { max-width: 100%; display: block; }
   background: var(--color-bg);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  padding: 20px;
+  padding: var(--space-5);
 }
 
 /* --------------------------------------------------------------------
@@ -136,22 +188,22 @@ img { max-width: 100%; display: block; }
 .badge-neutral { background: rgba(107, 114, 128, 0.12); color: var(--color-text-secondary); }
 
 /* --------------------------------------------------------------------
-   Header (site public)
+   Header (site public) — mobile-first
    -------------------------------------------------------------------- */
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 60;
   height: var(--header-height);
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
 }
-.site-header .container {
+.site-header-inner {
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
+  gap: 12px;
 }
 
 .brand {
@@ -160,29 +212,30 @@ img { max-width: 100%; display: block; }
   gap: 8px;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: var(--color-primary-dark);
   flex-shrink: 0;
+  min-width: 0;
 }
 .brand-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
   display: block;
+  flex-shrink: 0;
 }
 
+/* Recherche : cachée dans le header étroit, disponible dans le menu mobile */
 .header-search {
+  display: none;
   flex: 1;
   max-width: 420px;
-  display: flex;
   align-items: center;
   gap: 8px;
   background: var(--color-bg-soft);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-btn);
-  padding: 6px 10px;
+  padding: 8px 12px;
 }
 .header-search input {
   border: none;
@@ -197,21 +250,29 @@ img { max-width: 100%; display: block; }
 .header-search .fa-magnifying-glass { color: var(--color-text-secondary); font-size: 0.85rem; }
 
 .header-actions {
-  display: flex;
+  display: none;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .favorites-icon {
   position: relative;
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: var(--color-text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.15s ease;
 }
+.favorites-icon:hover { background: var(--color-bg-soft); }
 .favorites-badge {
   position: absolute;
-  top: -6px;
-  right: -8px;
+  top: 2px;
+  right: 2px;
   background: var(--color-accent);
   color: #fff;
   font-size: 0.65rem;
@@ -231,12 +292,199 @@ img { max-width: 100%; display: block; }
   gap: 8px;
   font-size: 0.9rem;
   font-weight: 600;
+  max-width: 160px;
+}
+.user-menu span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .user-menu img {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Bouton hamburger — visible uniquement sous le breakpoint "desktop-nav" */
+.menu-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-primary-dark);
+  font-size: 1.05rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.menu-toggle:hover { background: var(--color-bg-soft); }
+
+/* --------------------------------------------------------------------
+   Menu mobile (drawer plein écran)
+   -------------------------------------------------------------------- */
+.mobile-menu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 58, 74, 0.45);
+  z-index: 70;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+.mobile-menu-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(340px, 86vw);
+  background: var(--color-bg);
+  z-index: 80;
+  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.16);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5) var(--space-6);
+  overflow-y: auto;
+}
+.mobile-menu.is-open { transform: translateX(0); }
+
+.mobile-menu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+.menu-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-bg-soft);
+  color: var(--color-text);
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-menu-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-bg-soft);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-btn);
+  padding: 10px 14px;
+}
+.mobile-menu-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  width: 100%;
+  color: var(--color-text);
+}
+.mobile-menu-search .fa-magnifying-glass { color: var(--color-text-secondary); }
+
+.mobile-menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.mobile-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  min-height: 44px;
+}
+.mobile-menu-link:hover { background: var(--color-bg-soft); }
+.mobile-menu-link i { width: 20px; text-align: center; color: var(--color-primary); flex-shrink: 0; }
+.mobile-menu-avatar { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+.mobile-menu-link-muted { color: var(--color-text-secondary); }
+.mobile-menu-link-muted i { color: var(--color-text-secondary); }
+.mobile-menu-cta { margin-top: var(--space-2); }
+
+/* Groupe actions mobile (bouton compte + hamburger) — reste collé à
+   droite du header grâce à .site-header-inner en space-between,
+   même quand .header-search / .header-actions sont masqués. */
+.header-mobile-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Point d'entrée compte toujours visible sur mobile — sans lui, un
+   visiteur non connecté n'a aucun indice qu'il doit se connecter
+   tant qu'il n'a pas ouvert le menu hamburger. */
+.header-account-mobile {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  min-height: 38px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.header-account-mobile i { font-size: 0.8rem; }
+.header-account-mobile:hover { background: var(--color-primary-dark); }
+
+.header-account-mobile.is-authenticated {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  justify-content: center;
+  background: var(--color-bg-soft);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+.header-account-mobile.is-authenticated img {
+  width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+}
+.header-account-mobile.is-authenticated:hover { background: var(--color-primary-light); }
+
+@media (max-width: 380px) {
+  .header-account-mobile:not(.is-authenticated) span { display: none; }
+  .header-account-mobile:not(.is-authenticated) { width: 38px; padding: 0; justify-content: center; }
+}
+
+/* Bascule desktop / mobile de la navigation à 900px */
+@media (min-width: 900px) {
+  .header-search { display: flex; }
+  .header-actions { display: flex; }
+  .header-account-mobile { display: none; }
+  .menu-toggle { display: none; }
+  .mobile-menu,
+  .mobile-menu-overlay { display: none; }
+}
+
+@media (max-width: 480px) {
+  .brand-icon { width: 26px; height: 26px; }
+  .brand span.brand-text { font-size: 1rem; }
 }
 
 /* --------------------------------------------------------------------
@@ -245,22 +493,22 @@ img { max-width: 100%; display: block; }
 .site-footer {
   background: var(--color-primary-dark);
   color: rgba(255, 255, 255, 0.85);
-  margin-top: 60px;
-  padding: 40px 0 24px;
+  margin-top: var(--space-8);
+  padding: var(--space-6) 0 var(--space-5);
   font-size: 0.9rem;
 }
 .site-footer .footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 24px;
-  margin-bottom: 24px;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5) var(--space-4);
+  margin-bottom: var(--space-5);
 }
 .site-footer h4 { color: #fff; font-size: 0.95rem; }
-.site-footer a { color: rgba(255, 255, 255, 0.75); }
+.site-footer a { color: rgba(255, 255, 255, 0.75); display: inline-block; padding: 3px 0; }
 .site-footer a:hover { color: #fff; }
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.15);
-  padding-top: 16px;
+  padding-top: var(--space-4);
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.6);
   display: flex;
@@ -269,10 +517,14 @@ img { max-width: 100%; display: block; }
   gap: 8px;
 }
 
+@media (min-width: 640px) {
+  .site-footer .footer-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
 /* --------------------------------------------------------------------
    Messages / toasts Django
    -------------------------------------------------------------------- */
-.messages { list-style: none; margin: 16px 0 0; padding: 0; }
+.messages { list-style: none; margin: var(--space-4) 0 0; padding: 0; }
 .messages li {
   padding: 12px 16px;
   border-radius: var(--radius-btn);
@@ -286,13 +538,103 @@ img { max-width: 100%; display: block; }
 .messages .info    { background: rgba(29, 122, 116, 0.1); color: var(--color-primary-dark); }
 
 /* --------------------------------------------------------------------
+   Carte annonce (listing-card) — utilisée sur le site public
+   (recherche, accueil) et côté locataire (favoris). Vivait avant en
+   <style> dupliqué dans Website/_annonce_card.html à chaque carte.
+   -------------------------------------------------------------------- */
+.listing-card {
+  display: block;
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.listing-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-elevated); }
+.listing-card-photo { position: relative; aspect-ratio: 4 / 3; background: var(--color-bg-soft); }
+.listing-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+.listing-card-photo-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2rem; color: var(--color-text-secondary);
+}
+.listing-card-badge { position: absolute; top: 10px; left: 10px; }
+.listing-card-fav {
+  position: absolute; top: 8px; right: 8px;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: none; background: rgba(255,255,255,0.92);
+  font-size: 1rem; color: var(--color-text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: transform 0.1s ease, color 0.15s ease;
+}
+.listing-card-fav:active { transform: scale(0.92); }
+.listing-card-fav.is-favorite { color: var(--color-error); }
+.listing-card-body { padding: 14px 16px 16px; }
+.listing-card-title {
+  font-size: 1rem; margin: 0 0 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.listing-card-location { font-size: 0.82rem; margin: 0 0 8px; display: flex; align-items: center; gap: 5px; }
+.listing-card-price { margin: 0; font-size: 0.95rem; }
+
+/* --------------------------------------------------------------------
+   Formulaires de recherche (hero accueil + filtres recherche) —
+   composant partagé pour éviter la duplication entre les deux pages.
+   -------------------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: 4px; flex: 1 1 150px; }
+.field-sm { flex: 1 1 110px; }
+.field label { font-size: 0.75rem; font-weight: 600; color: var(--color-text-secondary); }
+.field input, .field select {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 9px 10px;
+  min-height: 44px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* --------------------------------------------------------------------
+   Grille d'annonces (listing-card) — accueil, recherche, favoris…
+   -------------------------------------------------------------------- */
+.listing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+@media (min-width: 640px) { .listing-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .listing-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1280px) { .listing-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* --------------------------------------------------------------------
+   État vide — partagé entre le site public (accueil, recherche) et
+   les dashboards. dashboard.css n'est chargé que côté locataire /
+   propriétaire : ce composant doit vivre ici pour s'afficher aussi
+   sur les pages publiques (sinon "Aucune annonce" s'affiche en texte
+   brut, sans carte ni style).
+   -------------------------------------------------------------------- */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+@media (min-width: 640px) {
+  .empty-state { padding: 48px 20px; }
+}
+.empty-state h3 { color: var(--color-text); margin-bottom: 6px; }
+
+/* --------------------------------------------------------------------
    Utilitaires
    -------------------------------------------------------------------- */
 .text-secondary { color: var(--color-text-secondary); }
 .price { font-weight: 700; }
 .price::after { content: " XOF"; font-weight: 600; font-size: 0.85em; }
 
-@media (max-width: 768px) {
-  .header-search { display: none; }
-  .brand span.brand-text { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

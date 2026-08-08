@@ -90,7 +90,8 @@
         {% for amenity in amenities %}
           <label class="amenity-check">
             <input type="checkbox" name="amenities" value="{{ amenity.pk }}" {% if amenity.pk in amenity_ids_selectionnes %}checked{% endif %}>
-            {% if amenity.icone %}<i class="fa-solid {{ amenity.icone }}"></i>{% endif %} {{ amenity.nom }}
+            {% if amenity.icone %}<i class="fa-solid {{ amenity.icone }}"></i>{% else %}<i class="fa-solid fa-circle-check"></i>{% endif %}
+            <span>{{ amenity.nom }}</span>
           </label>
         {% empty %}
           <p class="text-secondary">Aucun équipement défini pour le moment.</p>
@@ -103,58 +104,207 @@
       {% if annonce and annonce.images.all %}
         <div class="existing-photos">
           {% for image in annonce.images.all %}
-            <img src="{{ image.fichier.url }}" alt="" class="existing-photo{% if image.principale %} existing-photo-main{% endif %}">
+            <div class="existing-photo-wrap">
+              <img src="{{ image.fichier.url }}" alt="" class="existing-photo">
+              {% if image.principale %}<span class="existing-photo-main-badge"><i class="fa-solid fa-star"></i></span>{% endif %}
+            </div>
           {% endfor %}
         </div>
       {% endif %}
       <div class="field field-full">
-        <label for="photos">Ajouter des photos {% if not annonce or not annonce.images.all %}<span class="required">*</span>{% endif %}</label>
-        <input type="file" name="photos" id="photos" accept="image/*" multiple>
+        <label for="photos" class="photo-dropzone">
+          <i class="fa-solid fa-cloud-arrow-up photo-dropzone-icon"></i>
+          <span class="photo-dropzone-text">Ajouter des photos {% if not annonce or not annonce.images.all %}<span class="required">*</span>{% endif %}</span>
+          <span class="text-secondary photo-dropzone-hint">JPG, PNG — plusieurs fichiers possibles</span>
+        </label>
+        <input type="file" name="photos" id="photos" accept="image/*" multiple class="photo-input-hidden">
         <p class="field-hint text-secondary">La première photo ajoutée devient la photo principale si aucune n'existe déjà.</p>
       </div>
     </div>
 
     <div class="form-actions">
       <button type="submit" class="btn btn-outline">Enregistrer en brouillon</button>
-      <button type="submit" name="action" value="envoyer_validation" class="btn btn-primary">Enregistrer et envoyer pour validation</button>
+      <button type="submit" name="action" value="envoyer_validation" class="btn btn-primary">
+        <i class="fa-solid fa-paper-plane"></i> Enregistrer et envoyer pour validation
+      </button>
     </div>
   </form>
 {% endblock %}
 
-{% block extra_css %}
+{% block dashboard_extra_css %}
   <style>
-    .annonce-form { display: flex; flex-direction: column; gap: 20px; max-width: 760px; }
-    .form-step { padding: 24px; }
-    .form-step-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; margin-bottom: 18px; }
-    .form-step-num {
-      width: 26px; height: 26px; border-radius: 50%; background: var(--color-primary); color: #fff;
-      display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0;
+    .annonce-form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 760px;
+      width: 100%;
+      min-width: 0;
+      padding-bottom: 8px;
     }
-    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+
+    .form-step {
+      padding: 20px 18px;
+      position: relative;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .form-step { padding: 28px; }
+    }
+    .form-step-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+    }
+    .form-step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+    /* Connecteur visuel entre les étapes */
+    .form-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 39px;
+      bottom: -20px;
+      width: 2px;
+      height: 20px;
+      background: var(--color-border);
+    }
+
+    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; min-width: 0; }
     .field:last-child { margin-bottom: 0; }
     .field label { font-size: 0.85rem; font-weight: 600; }
     .field input, .field select, .field textarea {
-      border: 1px solid var(--color-border); border-radius: 10px; padding: 10px 12px;
-      font-family: var(--font-body); font-size: 0.92rem; color: var(--color-text); background: var(--color-bg);
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--color-text);
+      background: var(--color-bg);
       resize: vertical;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
     }
-    .field-hint { font-size: 0.78rem; margin: 4px 0 0; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .field-hint { font-size: 0.78rem; margin: 6px 0 0; }
     .required { color: var(--color-error); }
-    .form-grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px 16px; }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px 16px;
+      min-width: 0;
+    }
     @media (min-width: 560px) { .form-grid-2 { grid-template-columns: 1fr 1fr; } }
+    .form-grid-2 > .field { min-width: 0; }
     .field-full { grid-column: 1 / -1; }
 
-    .amenities-check-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-    .amenity-check {
-      display: flex; align-items: center; gap: 8px; font-size: 0.88rem;
-      border: 1px solid var(--color-border); border-radius: 10px; padding: 9px 12px; cursor: pointer;
+    .amenities-check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
+      gap: 10px;
+      min-width: 0;
     }
-    .amenity-check:has(input:checked) { border-color: var(--color-primary); background: rgba(29,122,116,0.06); }
+    .amenity-check {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.88rem;
+      min-height: 44px;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      min-width: 0;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .amenity-check i { color: var(--color-text-secondary); flex-shrink: 0; }
+    .amenity-check span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .amenity-check:has(input:checked) {
+      border-color: var(--color-primary);
+      background: rgba(37, 99, 235, 0.06);
+    }
+    .amenity-check:has(input:checked) i { color: var(--color-primary); }
+    .amenity-check input { width: auto; }
 
-    .existing-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
-    .existing-photo { width: 84px; height: 64px; object-fit: cover; border-radius: 8px; }
-    .existing-photo-main { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+    .existing-photos {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .existing-photo-wrap { position: relative; flex-shrink: 0; }
+    .existing-photo { width: 84px; height: 64px; object-fit: cover; border-radius: 10px; display: block; }
+    .existing-photo-main-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      color: #fff;
+      font-size: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
 
-    .form-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; padding-bottom: 40px; }
+    .photo-input-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+    .photo-dropzone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+      border: 2px dashed var(--color-border);
+      border-radius: 14px;
+      padding: 28px 16px;
+      cursor: pointer;
+      background: var(--color-bg-soft);
+      transition: border-color 0.15s ease, background 0.15s ease;
+      min-width: 0;
+    }
+    .photo-dropzone:hover { border-color: var(--color-primary); background: rgba(37, 99, 235, 0.04); }
+    .photo-dropzone-icon { font-size: 1.6rem; color: var(--color-primary); }
+    .photo-dropzone-text { font-weight: 600; font-size: 0.92rem; }
+    .photo-dropzone-hint { font-size: 0.78rem; }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      padding: 16px 0 40px;
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(0deg, var(--color-bg-soft) 60%, rgba(249,250,251,0));
+    }
+    .form-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+    @media (min-width: 560px) {
+      .form-actions .btn { flex: 0 1 auto; }
+    }
   </style>
 {% endblock %}

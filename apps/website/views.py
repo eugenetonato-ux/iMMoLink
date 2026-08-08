@@ -33,7 +33,17 @@ def home(request):
 
 
 def apropos(request):
-    return render(request, "Website/apropos.html")
+    from django.contrib.auth import get_user_model
+    from apps.payments.models import ContactUnlock
+
+    User = get_user_model()
+
+    context = {
+        "nb_logements": Property.objects.filter(statut="publiee").count(),
+        "nb_utilisateurs": User.objects.filter(role__in=["locataire", "proprietaire"]).count(),
+        "nb_mises_en_relation": ContactUnlock.objects.count(),
+    }
+    return render(request, "Website/apropos.html", context)
 
 
 def recherche(request):

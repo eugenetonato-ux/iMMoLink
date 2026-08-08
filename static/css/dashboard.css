@@ -1,6 +1,6 @@
 /* ==========================================================================
    iMMoLink — Dashboards locataire / propriétaire (pas l'admin cpanel)
-   Hérite des tokens de style.css
+   Hérite des tokens de style.css. Mobile-first.
    ========================================================================== */
 
 .dashboard-shell {
@@ -8,8 +8,15 @@
   min-height: calc(100vh - var(--header-height));
 }
 
-/* Nav secondaire du dashboard (onglets sous le header) */
+/* --------------------------------------------------------------------
+   Nav secondaire du dashboard (onglets sous le header)
+   Défile horizontalement sur mobile — scrollbar masquée + dégradés
+   sur les bords pour signaler qu'il y a d'autres onglets hors écran.
+   -------------------------------------------------------------------- */
 .dashboard-tabs {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 40;
   background: var(--color-bg);
   border-bottom: 1px solid var(--color-border);
 }
@@ -17,7 +24,15 @@
   display: flex;
   gap: 4px;
   overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
 }
+.dashboard-tabs .container::-webkit-scrollbar { display: none; }
+
 .dashboard-tabs a {
   padding: 14px 16px;
   font-size: 0.9rem;
@@ -25,6 +40,11 @@
   color: var(--color-text-secondary);
   border-bottom: 2px solid transparent;
   white-space: nowrap;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 .dashboard-tabs a:hover { color: var(--color-text); }
 .dashboard-tabs a.active {
@@ -34,35 +54,60 @@
 
 .dashboard-main {
   flex: 1;
-  padding: 28px 0 60px;
+  padding: var(--space-5) 0 var(--space-7);
+  width: 100%;
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .dashboard-main { padding: var(--space-6) 0 var(--space-8); }
 }
 
 .dashboard-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
 }
-.dashboard-header h1 { font-size: 1.4rem; margin: 0; }
+.dashboard-header h1 { font-size: clamp(1.25rem, 4vw, 1.4rem); margin: 0; }
 .dashboard-header .text-secondary { font-size: 0.9rem; }
+.dashboard-header > div { min-width: 0; flex: 1 1 220px; }
 
-/* Grille de cartes chiffrées */
+/* Sur mobile, les actions d'en-tête (ex. "Nouvelle annonce") passent en
+   pleine largeur pour rester faciles à toucher et bien visibles. */
+@media (max-width: 479.98px) {
+  .dashboard-header .btn { width: 100%; }
+}
+
+/* --------------------------------------------------------------------
+   Grille de cartes chiffrées
+   -------------------------------------------------------------------- */
 .stat-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 28px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+@media (min-width: 480px) {
+  .stat-grid { gap: var(--space-4); }
+}
+@media (min-width: 640px) {
+  .stat-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 }
 .stat-card {
   background: var(--color-bg);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  padding: 18px 20px;
+  padding: 16px;
+  min-width: 0;
+}
+@media (min-width: 640px) {
+  .stat-card { padding: 18px 20px; }
 }
 .stat-card .stat-label {
-  font-size: 0.8rem;
+  display: block;
+  font-size: 0.72rem;
   color: var(--color-text-secondary);
   font-weight: 600;
   text-transform: uppercase;
@@ -70,46 +115,88 @@
 }
 .stat-card .stat-value {
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
   font-weight: 700;
   margin-top: 4px;
 }
 
-/* Bloc profil incomplet / alerte */
+/* --------------------------------------------------------------------
+   Bloc profil incomplet / alerte
+   -------------------------------------------------------------------- */
 .profile-alert {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--space-3);
   flex-wrap: wrap;
   background: rgba(245, 158, 11, 0.08);
   border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: var(--radius-card);
-  padding: 16px 20px;
-  margin-bottom: 24px;
+  padding: 16px 18px;
+  margin-bottom: var(--space-5);
 }
-.profile-alert p { margin: 0; font-size: 0.9rem; }
+.profile-alert p { margin: 0; font-size: 0.9rem; min-width: 200px; flex: 1; }
+.profile-alert .btn { flex-shrink: 0; }
+@media (max-width: 479.98px) {
+  .profile-alert .btn { width: 100%; }
+}
 
-/* Liste / grille de contenu dashboard générique */
-.dashboard-section { margin-bottom: 32px; }
+/* --------------------------------------------------------------------
+   Liste / grille de contenu dashboard générique
+   -------------------------------------------------------------------- */
+.dashboard-section { margin-bottom: var(--space-6); }
 .dashboard-section-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-3);
   margin-bottom: 14px;
+  flex-wrap: wrap;
 }
 .dashboard-section-title h2 { font-size: 1.1rem; margin: 0; }
+.dashboard-section-title a { font-size: 0.85rem; font-weight: 600; color: var(--color-primary); }
 
-.empty-state {
-  text-align: center;
-  padding: 48px 20px;
-  color: var(--color-text-secondary);
-  background: var(--color-bg);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
+/* .empty-state vit maintenant dans style.css (composant partagé
+   avec le site public : accueil, recherche). */
+
+/* --------------------------------------------------------------------
+   Liste simple (lignes annonce/contact) — partagée entre les
+   tableaux de bord propriétaire et locataire.
+   -------------------------------------------------------------------- */
+.listing-table { padding: 6px var(--container-padding); min-width: 0; }
+.listing-table-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-border);
+  min-width: 0;
 }
-.empty-state h3 { color: var(--color-text); margin-bottom: 6px; }
+.listing-table-row:last-child { border-bottom: none; }
+.listing-table-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; flex: 1 1 220px; }
+.listing-table-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.listing-table-loc {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 0.82rem;
+  min-width: 0;
+  color: var(--color-text-secondary);
+}
+.listing-table-loc i { color: var(--color-primary); margin-top: 2px; flex-shrink: 0; }
+.listing-table-loc span { min-width: 0; overflow-wrap: break-word; }
+.listing-table-badge { flex-shrink: 0; }
+@media (max-width: 479.98px) {
+  .listing-table-row .btn { width: 100%; }
+}
 
 @media (max-width: 640px) {
-  .dashboard-tabs .container { padding: 0 12px; }
+  .dashboard-tabs .container { padding: 0 var(--container-padding); }
 }

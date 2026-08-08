@@ -65,6 +65,44 @@
     toggleFavorite(button);
   });
 
+  // ------------------------------------------------------------------
+  // Menu mobile (drawer plein écran) — ouverture/fermeture.
+  // ------------------------------------------------------------------
+  document.addEventListener("DOMContentLoaded", function () {
+    const menuToggle = document.getElementById("menuToggle");
+    const menuClose = document.getElementById("menuClose");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const overlay = document.getElementById("mobileMenuOverlay");
+    if (!menuToggle || !mobileMenu || !overlay) return;
+
+    function openMenu() {
+      mobileMenu.classList.add("is-open");
+      overlay.classList.add("is-open");
+      document.body.classList.add("menu-open");
+      mobileMenu.setAttribute("aria-hidden", "false");
+      menuToggle.setAttribute("aria-expanded", "true");
+    }
+
+    function closeMenu() {
+      mobileMenu.classList.remove("is-open");
+      overlay.classList.remove("is-open");
+      document.body.classList.remove("menu-open");
+      mobileMenu.setAttribute("aria-hidden", "true");
+      menuToggle.setAttribute("aria-expanded", "false");
+    }
+
+    menuToggle.addEventListener("click", openMenu);
+    if (menuClose) menuClose.addEventListener("click", closeMenu);
+    overlay.addEventListener("click", closeMenu);
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeMenu();
+    });
+    // Referme le menu si on clique un lien à l'intérieur (navigation).
+    mobileMenu.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", closeMenu);
+    });
+  });
+
   // Ferme automatiquement les toasts de confirmation après quelques secondes.
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".messages li").forEach(function (item, index) {

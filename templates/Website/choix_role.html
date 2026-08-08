@@ -34,9 +34,10 @@
 
 {% block extra_css %}
   <style>
-    .role-page { padding: 56px 0; min-height: calc(100vh - var(--header-height) - 260px); display: flex; align-items: center; }
-    .role-container { max-width: 760px; }
-    .role-intro { text-align: center; margin-bottom: 32px; }
+    .role-page { padding: 32px 0; min-height: calc(100vh - var(--header-height) - 200px); display: flex; align-items: center; }
+    @media (min-width: 640px) { .role-page { padding: 56px 0; } }
+    .role-container { max-width: 760px; width: 100%; }
+    .role-intro { text-align: center; margin-bottom: 28px; }
     .role-intro .connexion-icon { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 16px; }
     .role-intro h1 { font-size: 1.4rem; margin-bottom: 6px; }
 
@@ -49,7 +50,8 @@
       transition: transform 0.12s ease, box-shadow 0.12s ease;
       font-family: var(--font-body);
     }
-    .role-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,0.1); }
+    .role-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-elevated); }
+    .role-card:active { transform: translateY(1px); }
     .role-card-icon { font-size: 2rem; margin-bottom: 4px; }
     .role-card h2 { font-size: 1.1rem; margin: 0; }
     .role-card p { font-size: 0.88rem; margin: 0 0 12px; }

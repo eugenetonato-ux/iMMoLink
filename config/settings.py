@@ -173,11 +173,13 @@ SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "SCOPE": ["profile", "email"],
         "AUTH_PARAMS": {"access_type": "online"},
-        "APP": {
-            "client_id": config("GOOGLE_OAUTH_CLIENT_ID"),
-            "secret": config("GOOGLE_OAUTH_CLIENT_SECRET"),
-            "key": "",
-        },
+        "APPS": [
+            {
+                "client_id": config("GOOGLE_OAUTH_CLIENT_ID"),
+                "secret": config("GOOGLE_OAUTH_CLIENT_SECRET"),
+                "key": "",
+            }
+        ],
     }
 }
 

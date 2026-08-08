@@ -1,84 +1,310 @@
 {% extends "Base/base_dashboard.html" %}
 {% load static %}
 
-{% block title %}Mes annonces — iMMoLink{% endblock %}
-{% block dashboard_title %}Mes annonces{% endblock %}
-{% block dashboard_subtitle %}<p class="text-secondary">{{ annonces|length }} annonce{{ annonces|length|pluralize }}</p>{% endblock %}
-
-{% block dashboard_header_actions %}
-  <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary">+ Nouvelle annonce</a>
-{% endblock %}
+{% block title %}{% if annonce %}Modifier l'annonce{% else %}Nouvelle annonce{% endif %} — iMMoLink{% endblock %}
+{% block dashboard_title %}{% if annonce %}Modifier l'annonce{% else %}Nouvelle annonce{% endif %}{% endblock %}
+{% block dashboard_subtitle %}<p class="text-secondary">Les annonces sont vérifiées par l'équipe iMMoLink avant publication.</p>{% endblock %}
 
 {% block dashboard_content %}
-  {% if annonces %}
-    <div class="annonces-grid">
-      {% for annonce in annonces %}
-        <div class="card annonce-manage-card">
-          <div class="annonce-manage-photo">
-            {% if annonce.photo_principale %}
-              <img src="{{ annonce.photo_principale.url }}" alt="">
-            {% else %}
-              <div class="annonce-manage-photo-placeholder"><i class="fa-solid fa-house"></i></div>
-            {% endif %}
-            <span class="badge badge-{% if annonce.statut == 'publiee' %}success{% elif annonce.statut == 'en_attente_validation' %}warning{% elif annonce.statut == 'refusee' or annonce.statut == 'suspendue' %}error{% else %}neutral{% endif %} annonce-manage-badge">
-              {{ annonce.get_statut_display }}
-            </span>
-          </div>
-          <div class="annonce-manage-body">
-            <h3>{{ annonce.titre|default:"Sans titre" }}</h3>
-            <p class="text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }}</p>
-            <p class="price">{{ annonce.prix|floatformat:"0" }} <span class="text-secondary">/ {{ annonce.get_periodicite_display }}</span></p>
+  <form method="post" enctype="multipart/form-data" class="annonce-form">
+    {% csrf_token %}
 
-            {% if annonce.statut == "refusee" and annonce.motif_refus %}
-              <p class="annonce-manage-motif"><i class="fa-solid fa-circle-exclamation"></i> {{ annonce.motif_refus }}</p>
-            {% endif %}
-
-            <div class="annonce-manage-actions">
-              {% if annonce.statut == "brouillon" or annonce.statut == "refusee" %}
-                <a href="{% url 'owner:annonce_modifier' annonce.pk %}" class="btn btn-outline btn-sm">Modifier</a>
-                <form method="post" action="{% url 'owner:annonce_envoyer_validation' annonce.pk %}" style="display:inline;">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-primary btn-sm">Envoyer pour validation</button>
-                </form>
-                <form method="post" action="{% url 'owner:annonce_supprimer' annonce.pk %}" style="display:inline;" onsubmit="return confirm('Supprimer cette annonce ?');">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-outline btn-sm annonce-manage-delete">Supprimer</button>
-                </form>
-              {% elif annonce.statut == "publiee" %}
-                <a href="{% url 'website:annonce_detail' annonce.pk %}" class="btn btn-outline btn-sm">Voir l'annonce</a>
-              {% else %}
-                <span class="text-secondary annonce-manage-wait">En cours d'examen par l'équipe iMMoLink</span>
-              {% endif %}
-            </div>
-          </div>
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">1</span> Informations générales</h2>
+      <div class="field field-full">
+        <label for="titre">Titre de l'annonce <span class="required">*</span></label>
+        <input type="text" name="titre" id="titre" value="{{ annonce.titre|default:'' }}" placeholder="Ex. Studio meublé proche de la mer" required>
+      </div>
+      <div class="field field-full">
+        <label for="description">Description <span class="required">*</span></label>
+        <textarea name="description" id="description" rows="5" placeholder="Décris le logement, son état, son environnement…" required>{{ annonce.description|default:'' }}</textarea>
+      </div>
+      <div class="form-grid-2">
+        <div class="field">
+          <label for="type_logement">Type de logement <span class="required">*</span></label>
+          <select name="type_logement" id="type_logement" required>
+            <option value="">Choisir…</option>
+            <option value="chambre" {% if annonce.type_logement == "chambre" %}selected{% endif %}>Chambre</option>
+            <option value="studio" {% if annonce.type_logement == "studio" %}selected{% endif %}>Studio</option>
+            <option value="appartement" {% if annonce.type_logement == "appartement" %}selected{% endif %}>Appartement</option>
+            <option value="maison" {% if annonce.type_logement == "maison" %}selected{% endif %}>Maison</option>
+            <option value="villa" {% if annonce.type_logement == "villa" %}selected{% endif %}>Villa</option>
+            <option value="autre" {% if annonce.type_logement == "autre" %}selected{% endif %}>Autre</option>
+          </select>
         </div>
-      {% endfor %}
+        <div class="field">
+          <label for="chambres">Nombre de chambres</label>
+          <input type="number" name="chambres" id="chambres" min="0" value="{{ annonce.chambres|default:'1' }}">
+        </div>
+      </div>
     </div>
-  {% else %}
-    <div class="empty-state">
-      <h3>Aucune annonce pour le moment</h3>
-      <p>Publie ton premier logement pour commencer à recevoir des demandes.</p>
-      <a href="{% url 'owner:annonce_nouvelle' %}" class="btn btn-primary" style="margin-top: 12px;">Publier un logement</a>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">2</span> Prix &amp; conditions</h2>
+      <div class="form-grid-2">
+        <div class="field">
+          <label for="prix">Prix (XOF) <span class="required">*</span></label>
+          <input type="number" name="prix" id="prix" min="0" step="500" value="{{ annonce.prix|default:'' }}" required>
+        </div>
+        <div class="field">
+          <label for="periodicite">Périodicité <span class="required">*</span></label>
+          <select name="periodicite" id="periodicite" required>
+            <option value="mensuel" {% if annonce.periodicite == "mensuel" or not annonce %}selected{% endif %}>Mensuel</option>
+            <option value="trimestriel" {% if annonce.periodicite == "trimestriel" %}selected{% endif %}>Trimestriel</option>
+            <option value="annuel" {% if annonce.periodicite == "annuel" %}selected{% endif %}>Annuel</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="caution">Caution (XOF, optionnel)</label>
+          <input type="number" name="caution" id="caution" min="0" step="500" value="{{ annonce.caution|default:'' }}">
+        </div>
+      </div>
     </div>
-  {% endif %}
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">3</span> Localisation</h2>
+      <div class="form-grid-2">
+        <div class="field">
+          <label for="ville">Ville <span class="required">*</span></label>
+          <select name="ville" id="ville" required>
+            <option value="">Choisir…</option>
+            {% for ville in villes %}
+              <option value="{{ ville.nom }}" {% if annonce.ville == ville.nom %}selected{% endif %}>{{ ville.nom }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="field">
+          <label for="quartier">Quartier <span class="required">*</span></label>
+          <input type="text" name="quartier" id="quartier" value="{{ annonce.quartier|default:'' }}" required>
+        </div>
+        <div class="field field-full">
+          <label for="adresse">Adresse précise (optionnel, non affichée publiquement)</label>
+          <input type="text" name="adresse" id="adresse" value="{{ annonce.adresse|default:'' }}">
+        </div>
+      </div>
+    </div>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">4</span> Équipements</h2>
+      <div class="amenities-check-grid">
+        {% for amenity in amenities %}
+          <label class="amenity-check">
+            <input type="checkbox" name="amenities" value="{{ amenity.pk }}" {% if amenity.pk in amenity_ids_selectionnes %}checked{% endif %}>
+            {% if amenity.icone %}<i class="fa-solid {{ amenity.icone }}"></i>{% else %}<i class="fa-solid fa-circle-check"></i>{% endif %}
+            <span>{{ amenity.nom }}</span>
+          </label>
+        {% empty %}
+          <p class="text-secondary">Aucun équipement défini pour le moment.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="card form-step">
+      <h2 class="form-step-title"><span class="form-step-num">5</span> Photos</h2>
+      {% if annonce and annonce.images.all %}
+        <div class="existing-photos">
+          {% for image in annonce.images.all %}
+            <div class="existing-photo-wrap">
+              <img src="{{ image.fichier.url }}" alt="" class="existing-photo">
+              {% if image.principale %}<span class="existing-photo-main-badge"><i class="fa-solid fa-star"></i></span>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <div class="field field-full">
+        <label for="photos" class="photo-dropzone">
+          <i class="fa-solid fa-cloud-arrow-up photo-dropzone-icon"></i>
+          <span class="photo-dropzone-text">Ajouter des photos {% if not annonce or not annonce.images.all %}<span class="required">*</span>{% endif %}</span>
+          <span class="text-secondary photo-dropzone-hint">JPG, PNG — plusieurs fichiers possibles</span>
+        </label>
+        <input type="file" name="photos" id="photos" accept="image/*" multiple class="photo-input-hidden">
+        <p class="field-hint text-secondary">La première photo ajoutée devient la photo principale si aucune n'existe déjà.</p>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-outline">Enregistrer en brouillon</button>
+      <button type="submit" name="action" value="envoyer_validation" class="btn btn-primary">
+        <i class="fa-solid fa-paper-plane"></i> Enregistrer et envoyer pour validation
+      </button>
+    </div>
+  </form>
 {% endblock %}
 
-{% block extra_css %}
+{% block dashboard_extra_css %}
   <style>
-    .annonces-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 640px) { .annonces-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px) { .annonces-grid { grid-template-columns: repeat(3, 1fr); } }
+    .annonce-form {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      max-width: 760px;
+      width: 100%;
+      min-width: 0;
+      padding-bottom: 8px;
+    }
 
-    .annonce-manage-card { padding: 0; overflow: hidden; }
-    .annonce-manage-photo { position: relative; aspect-ratio: 4/3; background: var(--color-bg-soft); }
-    .annonce-manage-photo img { width: 100%; height: 100%; object-fit: cover; }
-    .annonce-manage-photo-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--color-text-secondary); }
-    .annonce-manage-badge { position: absolute; top: 10px; left: 10px; }
-    .annonce-manage-body { padding: 16px; }
-    .annonce-manage-body h3 { font-size: 1rem; margin-bottom: 2px; }
-    .annonce-manage-motif { font-size: 0.8rem; color: var(--color-error); background: rgba(239,68,68,0.08); padding: 6px 10px; border-radius: 8px; margin: 8px 0 0; }
-    .annonce-manage-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
-    .annonce-manage-delete { color: var(--color-error); border-color: var(--color-error); }
-    .annonce-manage-wait { font-size: 0.82rem; }
+    .form-step {
+      padding: 20px 18px;
+      position: relative;
+      min-width: 0;
+    }
+    @media (min-width: 640px) {
+      .form-step { padding: 28px; }
+    }
+    .form-step-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.05rem;
+      margin-bottom: 18px;
+    }
+    .form-step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+    }
+    /* Connecteur visuel entre les étapes */
+    .form-step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      left: 39px;
+      bottom: -20px;
+      width: 2px;
+      height: 20px;
+      background: var(--color-border);
+    }
+
+    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; min-width: 0; }
+    .field:last-child { margin-bottom: 0; }
+    .field label { font-size: 0.85rem; font-weight: 600; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      color: var(--color-text);
+      background: var(--color-bg);
+      resize: vertical;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+    .field-hint { font-size: 0.78rem; margin: 6px 0 0; }
+    .required { color: var(--color-error); }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px 16px;
+      min-width: 0;
+    }
+    @media (min-width: 560px) { .form-grid-2 { grid-template-columns: 1fr 1fr; } }
+    .form-grid-2 > .field { min-width: 0; }
+    .field-full { grid-column: 1 / -1; }
+
+    .amenities-check-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
+      gap: 10px;
+      min-width: 0;
+    }
+    .amenity-check {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 0.88rem;
+      min-height: 44px;
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      cursor: pointer;
+      min-width: 0;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .amenity-check i { color: var(--color-text-secondary); flex-shrink: 0; }
+    .amenity-check span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .amenity-check:has(input:checked) {
+      border-color: var(--color-primary);
+      background: rgba(37, 99, 235, 0.06);
+    }
+    .amenity-check:has(input:checked) i { color: var(--color-primary); }
+    .amenity-check input { width: auto; }
+
+    .existing-photos {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .existing-photo-wrap { position: relative; flex-shrink: 0; }
+    .existing-photo { width: 84px; height: 64px; object-fit: cover; border-radius: 10px; display: block; }
+    .existing-photo-main-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      color: #fff;
+      font-size: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    }
+
+    .photo-input-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+    .photo-dropzone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+      border: 2px dashed var(--color-border);
+      border-radius: 14px;
+      padding: 28px 16px;
+      cursor: pointer;
+      background: var(--color-bg-soft);
+      transition: border-color 0.15s ease, background 0.15s ease;
+      min-width: 0;
+    }
+    .photo-dropzone:hover { border-color: var(--color-primary); background: rgba(37, 99, 235, 0.04); }
+    .photo-dropzone-icon { font-size: 1.6rem; color: var(--color-primary); }
+    .photo-dropzone-text { font-weight: 600; font-size: 0.92rem; }
+    .photo-dropzone-hint { font-size: 0.78rem; }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      padding: 16px 0 40px;
+      position: sticky;
+      bottom: 0;
+      background: linear-gradient(0deg, var(--color-bg-soft) 60%, rgba(249,250,251,0));
+    }
+    .form-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+    @media (min-width: 560px) {
+      .form-actions .btn { flex: 0 1 auto; }
+    }
   </style>
 {% endblock %}

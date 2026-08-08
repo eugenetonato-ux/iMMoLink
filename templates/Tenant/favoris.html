@@ -14,6 +14,7 @@
     </div>
   {% else %}
     <div class="empty-state">
+      <div class="empty-state-icon"><i class="fa-regular fa-heart"></i></div>
       <h3>Aucun favori pour le moment</h3>
       <p>Clique sur l'icône <i class="fa-regular fa-heart"></i> d'une annonce pour la retrouver ici facilement.</p>
       <a href="{% url 'website:logements' %}" class="btn btn-primary" style="margin-top: 12px;">Rechercher un logement</a>
@@ -21,11 +22,22 @@
   {% endif %}
 {% endblock %}
 
-{% block extra_css %}
+{% block dashboard_extra_css %}
   <style>
-    .listing-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+    .listing-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 480px) { .listing-grid { gap: 20px; } }
     @media (min-width: 640px) { .listing-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (min-width: 1024px) { .listing-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (min-width: 1280px) { .listing-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--color-primary-light, rgba(29, 122, 116, 0.1));
+      color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 16px;
+    }
   </style>
 {% endblock %}

@@ -27,12 +27,12 @@
     </div>
 
     {% if derniers_contacts %}
-      <div class="card owner-listing-table">
+      <div class="card listing-table">
         {% for contact in derniers_contacts %}
-          <div class="owner-listing-row">
-            <div class="owner-listing-info">
-              <span class="owner-listing-title">{{ contact.annonce.titre }}</span>
-              <span class="text-secondary owner-listing-loc"><i class="fa-solid fa-location-dot"></i> {{ contact.annonce.quartier }}, {{ contact.annonce.ville }} · débloqué le {{ contact.unlocked_at|date:"d/m/Y" }}</span>
+          <div class="listing-table-row">
+            <div class="listing-table-info">
+              <span class="listing-table-title">{{ contact.annonce.titre }}</span>
+              <span class="listing-table-loc"><i class="fa-solid fa-location-dot"></i> <span>{{ contact.annonce.quartier }}, {{ contact.annonce.ville }} · débloqué le {{ contact.unlocked_at|date:"d/m/Y" }}</span></span>
             </div>
             <a href="{% url 'website:annonce_detail' contact.annonce.pk %}" class="btn btn-outline btn-sm">Voir</a>
           </div>
@@ -40,6 +40,7 @@
       </div>
     {% else %}
       <div class="empty-state">
+        <div class="empty-state-icon"><i class="fa-solid fa-house-circle-check"></i></div>
         <h3>Aucun contact débloqué pour le moment</h3>
         <p>Trouve un logement qui te plaît et contacte le propriétaire en toute sécurité.</p>
         <a href="{% url 'website:logements' %}" class="btn btn-primary" style="margin-top: 12px;">Rechercher un logement</a>
@@ -48,16 +49,16 @@
   </div>
 {% endblock %}
 
-{% block extra_css %}
+{% block dashboard_extra_css %}
   <style>
-    .owner-listing-table { padding: 6px 20px; }
-    .owner-listing-row {
-      display: flex; align-items: center; justify-content: space-between; gap: 16px;
-      padding: 14px 0; border-bottom: 1px solid var(--color-border);
+    .empty-state-icon {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--color-primary-light, rgba(29, 122, 116, 0.1));
+      color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 16px;
     }
-    .owner-listing-row:last-child { border-bottom: none; }
-    .owner-listing-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-    .owner-listing-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .owner-listing-loc { font-size: 0.82rem; }
   </style>
 {% endblock %}

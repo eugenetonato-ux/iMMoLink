@@ -36,6 +36,16 @@ def confirmer_paiement(payment, methode=""):
     idempotent (pas de double déblocage/double log même si appelé plusieurs
     fois pour la même référence, ce que fait un vrai webhook signé Sebpay
     en cas de retry réseau)."""
+    if methode and methode not in dict(Payment.METHODE_CHOICES):
+        raise ValueError(f"Méthode de paiement invalide : {methode}")
+
+    # select_for_update verrouille la ligne le temps de la transaction :
+    # si deux appels webhook arrivent quasi simultanément (retry réseau
+    # Sebpay), le second attend que le premier ait committé et lit alors
+    # statut="successful", au lieu que les deux lisent "pending" en même
+    # temps et tentent chacun un déblocage.
+    payment = Payment.objects.select_for_update().get(pk=payment.pk)
+
     if payment.statut == "successful":
         return ContactUnlock.objects.filter(payment=payment).first()
 
