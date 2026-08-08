@@ -32,15 +32,17 @@ X_FRAME_OPTIONS = "DENY"
 # qui termine le HTTPS avant d'atteindre Django :
 # SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# --- Cache partagé (Redis) ---
+# --- Cache partagé (base de données) ---
 # Important : LocMemCache (utilisé en dev) est propre à chaque process. En prod,
-# avec plusieurs workers Gunicorn, le compteur anti brute-force du login admin
+# avec plusieurs workers, le compteur anti brute-force du login admin
 # (apps/adminpanel/views.py) ne serait PAS partagé entre workers et la protection
-# serait contournable. Redis est donc nécessaire ici, pas juste recommandé.
-# Ajoute `redis` à requirements.txt et REDIS_URL dans ton .env de prod.
+# serait contournable. Redis n'étant pas disponible sur PythonAnywhere par défaut,
+# on utilise un cache en base de données : plus lent que Redis, mais partagé entre
+# workers et sans infrastructure supplémentaire. Nécessite une seule fois :
+#   python manage.py createcachetable
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": config("REDIS_URL", default="redis://127.0.0.1:6379/1"),
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache_table",
     }
 }
