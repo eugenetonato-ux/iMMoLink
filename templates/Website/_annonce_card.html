@@ -13,7 +13,12 @@
       <span class="badge badge-success listing-card-badge">Disponible</span>
     {% endif %}
 
-    <button type="button" class="listing-card-fav" aria-label="Ajouter aux favoris" data-annonce-id="{{ annonce.pk }}"><i class="fa-regular fa-heart"></i></button>
+    <button
+      type="button"
+      class="listing-card-fav{% if annonce.pk in favoris_ids %} is-favorite{% endif %}"
+      aria-label="{% if annonce.pk in favoris_ids %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}"
+      data-annonce-id="{{ annonce.pk }}"
+    ><i class="fa-{% if annonce.pk in favoris_ids %}solid{% else %}regular{% endif %} fa-heart"></i></button>
   </div>
 
   <div class="listing-card-body">

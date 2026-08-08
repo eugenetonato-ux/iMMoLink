@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from apps.accounts.services import profil_proprietaire_complet
 from apps.locations.models import Ville
@@ -58,6 +59,7 @@ def annonce_form(request, pk=None):
 
 
 @login_required
+@require_POST
 def annonce_envoyer_validation(request, pk):
     if request.user.role != "proprietaire":
         return redirect("accounts:choix_role")
@@ -71,6 +73,7 @@ def annonce_envoyer_validation(request, pk):
 
 
 @login_required
+@require_POST
 def annonce_supprimer(request, pk):
     if request.user.role != "proprietaire":
         return redirect("accounts:choix_role")

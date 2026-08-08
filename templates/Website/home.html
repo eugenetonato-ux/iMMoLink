@@ -18,12 +18,12 @@
           <div class="hero-search-row">
             <div class="field">
               <label for="ville">Ville</label>
-              <select name="ville" id="ville">
-                <option value="">Toutes les villes</option>
+              <input type="text" name="ville" id="ville" placeholder="Écris la ville voulue…" list="villes-suggestions" autocomplete="off">
+              <datalist id="villes-suggestions">
                 {% for ville in villes %}
-                  <option value="{{ ville.slug }}">{{ ville.nom }}</option>
+                  <option value="{{ ville.nom }}"></option>
                 {% endfor %}
-              </select>
+              </datalist>
             </div>
             <div class="field">
               <label for="quartier">Quartier</label>
@@ -85,7 +85,7 @@
       </div>
       <div class="cities-row">
         {% for ville in villes_populaires %}
-          <a href="{% url 'website:recherche' %}?ville={{ ville.slug }}" class="city-card">
+          <a href="{% url 'website:recherche' %}?ville={{ ville.nom|urlencode }}" class="city-card">
             {% if ville.photo %}
               <img src="{{ ville.photo.url }}" alt="{{ ville.nom }}">
             {% endif %}

@@ -24,8 +24,12 @@ def toggle_favorite(request, annonce_id):
 
 @login_required
 def mes_favoris(request):
-    annonces = (
+    annonces = list(
         Property.objects.filter(favoris__locataire=request.user, statut="publiee")
         .order_by("-favoris__created_at")
     )
-    return render(request, "Tenant/favoris.html", {"annonces": annonces})
+    # Toutes les annonces de cette page sont par définition des favoris : le
+    # cœur ❤️ de chaque carte doit démarrer plein (même composant partagé
+    # que la recherche/l'accueil, qui utilise ce même indicateur).
+    favoris_ids = {annonce.pk for annonce in annonces}
+    return render(request, "Tenant/favoris.html", {"annonces": annonces, "favoris_ids": favoris_ids})

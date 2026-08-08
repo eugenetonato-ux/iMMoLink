@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.common.models import PlatformSettings
@@ -18,6 +19,18 @@ def _villes_avec_compteur():
     return villes
 
 
+def _favoris_ids(user):
+    """IDs des annonces déjà en favori pour le locataire connecté — utilisé
+    pour que le cœur ❤️ des cartes reflète le bon état dès le chargement de
+    la page, au lieu de toujours démarrer vide (état visuel désynchronisé
+    tant qu'on ne clique pas dessus)."""
+    if not user.is_authenticated or user.role != "locataire":
+        return set()
+    from apps.favorites.models import Favorite
+
+    return set(Favorite.objects.filter(locataire=user).values_list("annonce_id", flat=True))
+
+
 def home(request):
     annonces = Property.objects.filter(statut="publiee").order_by("-created_at")[:8]
     villes = _villes_avec_compteur()
@@ -28,7 +41,12 @@ def home(request):
     return render(
         request,
         "Website/home.html",
-        {"annonces": annonces, "villes": villes, "villes_populaires": villes_populaires},
+        {
+            "annonces": annonces,
+            "villes": villes,
+            "villes_populaires": villes_populaires,
+            "favoris_ids": _favoris_ids(request.user),
+        },
     )
 
 
@@ -49,19 +67,20 @@ def apropos(request):
 def recherche(request):
     annonces = Property.objects.filter(statut="publiee")
 
-    ville_slug = request.GET.get("ville")
-    quartier = request.GET.get("quartier")
+    q = request.GET.get("q", "").strip()
+    ville = request.GET.get("ville", "").strip()
+    quartier = request.GET.get("quartier", "").strip()
     type_logement = request.GET.get("type")
     prix_min = request.GET.get("prix_min")
     prix_max = request.GET.get("prix_max")
     chambres = request.GET.get("chambres")
 
-    ville_selectionnee = None
-    if ville_slug:
-        ville_obj = Ville.objects.filter(slug=ville_slug).first()
-        if ville_obj:
-            annonces = annonces.filter(ville__iexact=ville_obj.nom)
-            ville_selectionnee = ville_obj.nom
+    # Le locataire écrit librement la ville/le quartier voulu (pas de liste
+    # imposée) : on filtre par correspondance partielle, insensible à la casse.
+    if q:
+        annonces = annonces.filter(Q(ville__icontains=q) | Q(quartier__icontains=q))
+    if ville:
+        annonces = annonces.filter(ville__icontains=ville)
     if quartier:
         annonces = annonces.filter(quartier__icontains=quartier)
     if type_logement:
@@ -81,7 +100,12 @@ def recherche(request):
     return render(
         request,
         "Website/recherche.html",
-        {"annonces": page_obj, "villes": Ville.objects.all(), "ville_selectionnee": ville_selectionnee},
+        {
+            "annonces": page_obj,
+            "villes": Ville.objects.all(),
+            "ville_selectionnee": ville or None,
+            "favoris_ids": _favoris_ids(request.user),
+        },
     )
 
 

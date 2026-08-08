@@ -10,12 +10,12 @@
       <form class="filters-bar card" action="{% url 'website:recherche' %}" method="get">
         <div class="field">
           <label for="ville">Ville</label>
-          <select name="ville" id="ville">
-            <option value="">Toutes les villes</option>
+          <input type="text" name="ville" id="ville" value="{{ request.GET.ville }}" placeholder="Écris la ville voulue…" list="villes-suggestions" autocomplete="off">
+          <datalist id="villes-suggestions">
             {% for ville in villes %}
-              <option value="{{ ville.slug }}" {% if request.GET.ville == ville.slug %}selected{% endif %}>{{ ville.nom }}</option>
+              <option value="{{ ville.nom }}"></option>
             {% endfor %}
-          </select>
+          </datalist>
         </div>
         <div class="field">
           <label for="quartier">Quartier</label>
