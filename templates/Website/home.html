@@ -163,15 +163,10 @@
     .hero-visual { display: block; margin-bottom: 8px; }
     .hero-visual-img {
       width: 100%;
+      height: auto;
       border-radius: var(--radius-card);
       box-shadow: var(--shadow-card);
-      object-fit: contain;
-      background: var(--color-bg-soft);
-      aspect-ratio: 16 / 9;
-    }
-    @media (min-width: 760px) {
-      .hero-visual { margin-bottom: 0; }
-      .hero-visual-img { aspect-ratio: 1 / 1; }
+      display: block;
     }
     .hero-search { padding: 16px; border: 1px solid var(--color-border); background: var(--color-bg-soft); }
     .hero-search-row {
