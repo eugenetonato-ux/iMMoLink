@@ -7,6 +7,7 @@ app_name = "adminpanel"
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
     path("connexion/", views.connexion, name="connexion"),
+    path("verification-2fa/", views.verification_2fa, name="verification_2fa"),
     path("deconnexion/", views.deconnexion, name="deconnexion"),
     path("annonces/", views.annonces, name="annonces"),
     path("annonces/<int:pk>/valider/", views.annonce_valider, name="annonce_valider"),

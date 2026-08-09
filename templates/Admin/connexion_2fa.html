@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vérification 2FA — iMMoLink</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+</head>
+<body>
+  <div class="admin-login-page">
+    <div class="admin-login-card">
+      <img src="{% static 'images/favicon.png' %}" alt="iMMoLink" class="admin-login-icon">
+      <h1>Vérification <span>2FA</span></h1>
+      <p class="admin-login-subtitle">Entrez le code à 6 chiffres de votre application d'authentification.</p>
+
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <form method="post" class="admin-login-form">
+        {% csrf_token %}
+        <div class="admin-form-field">
+          <label for="code">Code de vérification</label>
+          <input
+            type="text"
+            name="code"
+            id="code"
+            inputmode="numeric"
+            pattern="[0-9]{6}"
+            maxlength="6"
+            autocomplete="one-time-code"
+            required
+            autofocus
+          >
+        </div>
+        <button type="submit" class="admin-btn admin-btn-primary admin-login-submit">Valider</button>
+      </form>
+
+      <p class="admin-login-note">Le code change toutes les 30 secondes. Session d'attente limitée à 5 minutes.</p>
+    </div>
+  </div>
+
+  <style>
+    .admin-login-page {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: var(--admin-sidebar); padding: 20px;
+    }
+    .admin-login-card {
+      background: var(--admin-card); border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+      padding: 36px 32px; max-width: 380px; width: 100%; text-align: center;
+    }
+    .admin-login-icon {
+      width: 64px; height: 64px; border-radius: 50%; object-fit: cover;
+      display: block; margin: 0 auto 16px;
+    }
+    .admin-login-card h1 { font-size: 1.25rem; margin-bottom: 4px; color: var(--admin-text); }
+    .admin-login-card h1 span { color: var(--admin-primary); }
+    .admin-login-subtitle { font-size: 0.85rem; color: var(--admin-text-secondary); margin-bottom: 22px; }
+    .admin-login-form { text-align: left; }
+    .admin-form-field { max-width: none; }
+    #code {
+      letter-spacing: 0.4em; text-align: center; font-size: 1.1rem; font-weight: 600;
+    }
+    .admin-login-submit { width: 100%; justify-content: center; padding: 11px; font-size: 0.9rem; margin-top: 4px; }
+    .admin-login-note { font-size: 0.74rem; color: var(--admin-text-secondary); margin-top: 20px; line-height: 1.5; }
+    .messages { list-style: none; padding: 0; margin: 0 0 16px; text-align: left; }
+  </style>
+</body>
+</html>

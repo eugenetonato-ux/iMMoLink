@@ -20,6 +20,10 @@ from .models import AdminLog
 MAX_LOGIN_ATTEMPTS = 5
 LOCKOUT_DURATION_SECONDS = 15 * 60  # 15 minutes
 
+# --- Protection brute-force code 2FA (même principe, clé de cache distincte) ---
+MAX_2FA_ATTEMPTS = 5
+LOCKOUT_2FA_DURATION_SECONDS = 15 * 60
+
 
 def _client_ip(request):
     xff = request.META.get("HTTP_X_FORWARDED_FOR")
@@ -30,6 +34,10 @@ def _client_ip(request):
 
 def _lockout_cache_key(ip):
     return f"admin_login_attempts:{ip}"
+
+
+def _lockout_2fa_cache_key(ip):
+    return f"admin_2fa_attempts:{ip}"
 
 
 def admin_required(view):
@@ -64,9 +72,10 @@ def connexion(request):
 
         if services.verifier_identifiants(username, password):
             cache.delete(cache_key)
-            request.session["is_admin"] = True
-            request.session["admin_username"] = username
-            return redirect("adminpanel:dashboard")
+            # Identifiants OK : on n'ouvre PAS encore la session admin,
+            # on passe à l'étape 2FA.
+            services.demarrer_attente_2fa(request, username)
+            return redirect("adminpanel:verification_2fa")
 
         attempts += 1
         cache.set(cache_key, attempts, LOCKOUT_DURATION_SECONDS)
@@ -84,6 +93,61 @@ def connexion(request):
             )
 
     return render(request, "Admin/connexion.html")
+
+
+def verification_2fa(request):
+    """Étape 2 : code TOTP. N'est accessible que si l'étape 1 vient de réussir
+    (attente 2FA active et non expirée) — sinon retour au login."""
+    if request.session.get("is_admin"):
+        return redirect("adminpanel:dashboard")
+
+    if not services.attente_2fa_valide(request):
+        services.nettoyer_attente_2fa(request)
+        messages.error(request, "Session expirée, veuillez vous reconnecter.")
+        return redirect("adminpanel:connexion")
+
+    ip = _client_ip(request)
+    cache_key = _lockout_2fa_cache_key(ip)
+    username = request.session.get("pending_admin_username")
+
+    if request.method == "POST":
+        attempts = cache.get(cache_key, 0)
+
+        if attempts >= MAX_2FA_ATTEMPTS:
+            messages.error(
+                request,
+                "Trop de tentatives échouées. Réessayez dans 15 minutes.",
+            )
+            return render(request, "Admin/connexion_2fa.html")
+
+        code = request.POST.get("code", "")
+
+        if services.verifier_code_2fa(code):
+            cache.delete(cache_key)
+            services.nettoyer_attente_2fa(request)
+            request.session["is_admin"] = True
+            request.session["admin_username"] = username
+            services.journaliser(request, "connexion_reussie")
+            return redirect("adminpanel:dashboard")
+
+        attempts += 1
+        cache.set(cache_key, attempts, LOCKOUT_2FA_DURATION_SECONDS)
+        tentatives_restantes = max(MAX_2FA_ATTEMPTS - attempts, 0)
+
+        if tentatives_restantes == 0:
+            services.nettoyer_attente_2fa(request)
+            messages.error(
+                request,
+                "Trop de tentatives échouées. Compte verrouillé pendant 15 minutes.",
+            )
+            return redirect("adminpanel:connexion")
+        else:
+            messages.error(
+                request,
+                f"Code incorrect. {tentatives_restantes} tentative(s) restante(s).",
+            )
+
+    return render(request, "Admin/connexion_2fa.html")
 
 
 @admin_required

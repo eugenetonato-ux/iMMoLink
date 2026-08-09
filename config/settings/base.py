@@ -18,6 +18,7 @@ ADMIN_URL_PATH = config("ADMIN_URL_PATH", default="cpanel_administrateur")
 # Espace admin séparé (jamais un compte utilisateur classique / jamais allauth)
 ADMIN_USERNAME = config("ADMIN_USERNAME", default="")
 ADMIN_PASSWORD = config("ADMIN_PASSWORD", default="")
+ADMIN_TOTP_SECRET = config("ADMIN_TOTP_SECRET", default="")
 
 # Application definition
 
