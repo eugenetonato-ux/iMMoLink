@@ -20,3 +20,28 @@ class AdminLog(models.Model):
 
     def __str__(self):
         return f"{self.created_at:%Y-%m-%d %H:%M} — {self.action} — {self.cible}"
+
+
+class AdminLoginAttempt(models.Model):
+    """Trace chaque tentative de connexion admin (étape mot de passe OU
+    étape 2FA), pour un anti-brute-force GLOBAL (pas par IP — une seule
+    IP différente à chaque essai ne permet pas de contourner le blocage)
+    et PERSISTANT en base (survit aux redémarrages fréquents du serveur,
+    contrairement à un compteur en cache mémoire)."""
+
+    ETAPE_CHOICES = [
+        ("login", "Mot de passe"),
+        ("2fa", "Code 2FA"),
+    ]
+
+    etape = models.CharField(max_length=10, choices=ETAPE_CHOICES)
+    ip_address = models.GenericIPAddressField()
+    success = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        status = "OK" if self.success else "ÉCHEC"
+        return f"[{status}] {self.get_etape_display()} @ {self.ip_address} ({self.created_at:%Y-%m-%d %H:%M})"
