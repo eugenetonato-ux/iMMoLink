@@ -12,5 +12,6 @@ urlpatterns = [
     path("annonces/nouvelle/", property_views.annonce_form, name="annonce_nouvelle"),
     path("annonces/<int:pk>/modifier/", property_views.annonce_form, name="annonce_modifier"),
     path("annonces/<int:pk>/valider/", property_views.annonce_envoyer_validation, name="annonce_envoyer_validation"),
+    path("annonces/<int:pk>/retirer/", property_views.annonce_retirer, name="annonce_retirer"),
     path("annonces/<int:pk>/supprimer/", property_views.annonce_supprimer, name="annonce_supprimer"),
 ]

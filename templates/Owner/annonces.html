@@ -59,7 +59,16 @@
                 </form>
               {% endif %}
 
-              {% if annonce.statut == "brouillon" or annonce.statut == "refusee" %}
+              {% if annonce.statut == "publiee" %}
+                <form method="post" action="{% url 'owner:annonce_retirer' annonce.pk %}" class="owner-annonce-inline-form" onsubmit="return confirm('Retirer « {{ annonce.titre|escapejs }} » du marché ? Elle repassera en brouillon et ne sera plus visible sur le site.');">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-eye-slash"></i> Retirer
+                  </button>
+                </form>
+              {% endif %}
+
+              {% if annonce.statut == "brouillon" or annonce.statut == "refusee" or annonce.statut == "publiee" %}
                 <form method="post" action="{% url 'owner:annonce_supprimer' annonce.pk %}" class="owner-annonce-inline-form" onsubmit="return confirm('Supprimer définitivement « {{ annonce.titre|escapejs }} » ?');">
                   {% csrf_token %}
                   <button type="submit" class="btn btn-outline btn-sm owner-annonce-delete" aria-label="Supprimer l'annonce">

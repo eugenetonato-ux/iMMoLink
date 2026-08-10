@@ -62,3 +62,13 @@ def soumettre_pour_validation(annonce):
             fail_silently=True,
         )
     return annonce
+
+
+def retirer_annonce(annonce):
+    """Retire une annonce publiée du marché à la demande du propriétaire :
+    elle repasse en brouillon (donc redevient modifiable) et perd sa date de
+    publication. Elle pourra être renvoyée en validation plus tard."""
+    annonce.statut = "brouillon"
+    annonce.publiee_le = None
+    annonce.save(update_fields=["statut", "publiee_le"])
+    return annonce
