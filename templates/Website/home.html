@@ -15,19 +15,20 @@
         <p class="hero-subtitle">Chambres, studios, appartements et maisons — annonces vérifiées, contact sécurisé.</p>
 
         <form class="hero-search card" action="{% url 'website:recherche' %}" method="get">
-          <div class="hero-search-row">
+          <div class="hero-search-row" data-cascade="ville-quartier" data-quartiers-endpoint="{% url 'locations:quartiers_par_ville' ville_id=0 %}">
             <div class="field">
               <label for="ville">Ville</label>
-              <input type="text" name="ville" id="ville" placeholder="Écris la ville voulue…" list="villes-suggestions" autocomplete="off">
+              <input type="text" name="ville" id="ville" placeholder="Écris la ville voulue…" list="villes-suggestions" autocomplete="off" data-role="ville">
               <datalist id="villes-suggestions">
                 {% for ville in villes %}
-                  <option value="{{ ville.nom }}"></option>
+                  <option value="{{ ville.nom }}" data-id="{{ ville.id }}"></option>
                 {% endfor %}
               </datalist>
             </div>
             <div class="field">
               <label for="quartier">Quartier</label>
-              <input type="text" name="quartier" id="quartier" placeholder="Quartier">
+              <input type="text" name="quartier" id="quartier" placeholder="Choisis d'abord une ville" list="quartiers-suggestions" autocomplete="off" data-role="quartier" disabled>
+              <datalist id="quartiers-suggestions"></datalist>
             </div>
             <div class="field">
               <label for="type">Type</label>

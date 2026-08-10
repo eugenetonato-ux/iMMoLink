@@ -63,19 +63,20 @@
 
     <div class="card form-step">
       <h2 class="form-step-title"><span class="form-step-num">3</span> Localisation</h2>
-      <div class="form-grid-2">
+      <div class="form-grid-2" data-cascade="ville-quartier" data-cascade-lock="false" data-quartiers-endpoint="{% url 'locations:quartiers_par_ville' ville_id=0 %}">
         <div class="field">
           <label for="ville">Ville <span class="required">*</span></label>
-          <select name="ville" id="ville" required>
+          <select name="ville" id="ville" required data-role="ville">
             <option value="">Choisir…</option>
             {% for ville in villes %}
-              <option value="{{ ville.nom }}" {% if annonce.ville == ville.nom %}selected{% endif %}>{{ ville.nom }}</option>
+              <option value="{{ ville.nom }}" data-id="{{ ville.id }}" {% if annonce.ville == ville.nom %}selected{% endif %}>{{ ville.nom }}</option>
             {% endfor %}
           </select>
         </div>
         <div class="field">
           <label for="quartier">Quartier <span class="required">*</span></label>
-          <input type="text" name="quartier" id="quartier" value="{{ annonce.quartier|default:'' }}" required>
+          <input type="text" name="quartier" id="quartier" value="{{ annonce.quartier|default:'' }}" list="quartiers-suggestions-annonce" autocomplete="off" data-role="quartier" required>
+          <datalist id="quartiers-suggestions-annonce"></datalist>
         </div>
         <div class="field field-full">
           <label for="adresse">Adresse précise (optionnel, non affichée publiquement)</label>
