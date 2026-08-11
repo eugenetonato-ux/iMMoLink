@@ -16,8 +16,8 @@ class CustomUserAdmin(UserAdmin):
 
 @admin.register(OwnerProfile)
 class OwnerProfileAdmin(admin.ModelAdmin):
-    list_display = ("user", "ville", "quartier", "whatsapp", "verifie")
-    list_filter = ("verifie", "ville")
+    list_display = ("user", "commune", "quartier", "whatsapp", "verifie")
+    list_filter = ("verifie", "commune")
     search_fields = ("user__email", "whatsapp")
 
 
