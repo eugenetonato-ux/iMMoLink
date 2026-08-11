@@ -102,7 +102,7 @@ def completer_profil_proprietaire(request):
         services.creer_ou_maj_profil_proprietaire(
             request.user,
             whatsapp=request.POST.get("whatsapp"),
-            ville=request.POST.get("ville"),
+            commune=request.POST.get("commune"),
             quartier=request.POST.get("quartier"),
             adresse=request.POST.get("adresse", ""),
             photo_profil=request.FILES.get("photo_profil"),
@@ -111,11 +111,27 @@ def completer_profil_proprietaire(request):
             messages.success(request, "Profil complété — tu peux publier une annonce.")
             return redirect("owner:owner_dashboard")
         messages.error(request, "Merci de compléter tous les champs obligatoires, y compris la photo de profil.")
+        profil = OwnerProfile.objects.filter(user=request.user).first()
 
-    from apps.geo.models import Commune
+    from apps.geo.models import Department
+
+    # Pour préremplir la cascade Département > Commune > Arrondissement > Quartier
+    # en JS si le profil a déjà une localisation enregistrée.
+    profil_geo_selectionne = None
+    if profil and profil.quartier_id:
+        profil_geo_selectionne = {
+            "department_id": profil.commune.department_id,
+            "commune_id": profil.commune_id,
+            "arrondissement_id": profil.quartier.arrondissement_id,
+            "quartier_id": profil.quartier_id,
+        }
 
     return render(
         request,
         "Owner/completer_profil.html",
-        {"profil": profil, "villes": Commune.objects.all()},
+        {
+            "profil": profil,
+            "departments": Department.objects.all(),
+            "profil_geo_selectionne": profil_geo_selectionne,
+        },
     )

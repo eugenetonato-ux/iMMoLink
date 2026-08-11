@@ -31,17 +31,17 @@ def profil_proprietaire_complet(user):
         profil = user.ownerprofile
     except OwnerProfile.DoesNotExist:
         return False
-    return bool(profil.whatsapp and profil.ville and profil.quartier and profil.photo_profil)
+    return bool(profil.whatsapp and profil.commune_id and profil.quartier_id and profil.photo_profil)
 
 
-def creer_ou_maj_profil_proprietaire(user, whatsapp, ville, quartier, adresse="", photo_profil=None):
+def creer_ou_maj_profil_proprietaire(user, whatsapp, commune, quartier, adresse="", photo_profil=None):
     profil, _ = OwnerProfile.objects.get_or_create(user=user)
     if whatsapp:
         profil.whatsapp = whatsapp
-    if ville:
-        profil.ville = ville
+    if commune:
+        profil.commune_id = commune
     if quartier:
-        profil.quartier = quartier
+        profil.quartier_id = quartier
     if adresse:
         profil.adresse = adresse
     if photo_profil:

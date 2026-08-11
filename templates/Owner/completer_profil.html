@@ -34,17 +34,31 @@
           <input type="tel" name="whatsapp" id="whatsapp" value="{{ profil.whatsapp|default:'' }}" placeholder="+229 01 XX XX XX XX" required>
         </div>
         <div class="field">
-          <label for="ville"><i class="fa-solid fa-city"></i> Ville <span class="required">*</span></label>
-          <select name="ville" id="ville" required>
-            <option value="">Choisir une ville</option>
-            {% for ville in villes %}
-              <option value="{{ ville.nom }}" {% if profil.ville == ville.nom %}selected{% endif %}>{{ ville.nom }}</option>
+          <label for="department"><i class="fa-solid fa-map"></i> Département <span class="required">*</span></label>
+          <select id="department" required>
+            <option value="">Choisir un département</option>
+            {% for department in departments %}
+              <option value="{{ department.id }}">{{ department.nom }}</option>
             {% endfor %}
           </select>
         </div>
         <div class="field">
-          <label for="quartier"><i class="fa-solid fa-map-pin"></i> Quartier <span class="required">*</span></label>
-          <input type="text" name="quartier" id="quartier" value="{{ profil.quartier|default:'' }}" required>
+          <label for="commune"><i class="fa-solid fa-city"></i> Commune (Ville) <span class="required">*</span></label>
+          <select name="commune" id="commune" required disabled>
+            <option value="">Choisir d'abord un département</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="arrondissement"><i class="fa-solid fa-signs-post"></i> Arrondissement <span class="required">*</span></label>
+          <select id="arrondissement" required disabled>
+            <option value="">Choisir d'abord une commune</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="quartier"><i class="fa-solid fa-map-pin"></i> Quartier / Village <span class="required">*</span></label>
+          <select name="quartier" id="quartier" required disabled>
+            <option value="">Choisir d'abord un arrondissement</option>
+          </select>
         </div>
         <div class="field field-full">
           <label for="adresse"><i class="fa-solid fa-location-dot"></i> Adresse précise (optionnel)</label>
@@ -55,6 +69,100 @@
       <button type="submit" class="btn btn-primary btn-block"><i class="fa-solid fa-circle-check"></i> Enregistrer et continuer</button>
     </form>
   </div>
+
+  {{ profil_geo_selectionne|json_script:"profil-geo-data" }}
+  <script>
+    (function () {
+      const urls = {
+        communes: "{% url 'geo:communes_by_department' %}",
+        arrondissements: "{% url 'geo:arrondissements_by_commune' %}",
+        localities: "{% url 'geo:localities_by_arrondissement' %}",
+      };
+
+      const departmentSelect = document.getElementById("department");
+      const communeSelect = document.getElementById("commune");
+      const arrondissementSelect = document.getElementById("arrondissement");
+      const quartierSelect = document.getElementById("quartier");
+
+      function remplirSelect(select, items, placeholder, valeurSelectionnee) {
+        select.innerHTML = "";
+        const optionVide = document.createElement("option");
+        optionVide.value = "";
+        optionVide.textContent = placeholder;
+        select.appendChild(optionVide);
+        items.forEach(function (item) {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = item.nom;
+          if (valeurSelectionnee && String(item.id) === String(valeurSelectionnee)) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+        select.disabled = items.length === 0;
+      }
+
+      function viderSelect(select, placeholder) {
+        remplirSelect(select, [], placeholder);
+        select.disabled = true;
+      }
+
+      async function chargerCommunes(departmentId, communeSelectionnee) {
+        if (!departmentId) {
+          viderSelect(communeSelect, "Choisir d'abord un département");
+          viderSelect(arrondissementSelect, "Choisir d'abord une commune");
+          viderSelect(quartierSelect, "Choisir d'abord un arrondissement");
+          return;
+        }
+        const reponse = await fetch(`${urls.communes}?department_id=${departmentId}`);
+        const data = await reponse.json();
+        remplirSelect(communeSelect, data.results, "Choisir une commune", communeSelectionnee);
+      }
+
+      async function chargerArrondissements(communeId, arrondissementSelectionne) {
+        if (!communeId) {
+          viderSelect(arrondissementSelect, "Choisir d'abord une commune");
+          viderSelect(quartierSelect, "Choisir d'abord un arrondissement");
+          return;
+        }
+        const reponse = await fetch(`${urls.arrondissements}?commune_id=${communeId}`);
+        const data = await reponse.json();
+        remplirSelect(arrondissementSelect, data.results, "Choisir un arrondissement", arrondissementSelectionne);
+      }
+
+      async function chargerQuartiers(arrondissementId, quartierSelectionne) {
+        if (!arrondissementId) {
+          viderSelect(quartierSelect, "Choisir d'abord un arrondissement");
+          return;
+        }
+        const reponse = await fetch(`${urls.localities}?arrondissement_id=${arrondissementId}`);
+        const data = await reponse.json();
+        remplirSelect(quartierSelect, data.results, "Choisir un quartier / village", quartierSelectionne);
+      }
+
+      departmentSelect.addEventListener("change", function () {
+        chargerCommunes(departmentSelect.value);
+      });
+      communeSelect.addEventListener("change", function () {
+        chargerArrondissements(communeSelect.value);
+      });
+      arrondissementSelect.addEventListener("change", function () {
+        chargerQuartiers(arrondissementSelect.value);
+      });
+
+      // Préremplissage en mode édition (profil déjà localisé)
+      const dataEl = document.getElementById("profil-geo-data");
+      const geoInitial = dataEl ? JSON.parse(dataEl.textContent) : null;
+      if (geoInitial) {
+        departmentSelect.value = geoInitial.department_id;
+        chargerCommunes(geoInitial.department_id, geoInitial.commune_id).then(function () {
+          return chargerArrondissements(geoInitial.commune_id, geoInitial.arrondissement_id);
+        }).then(function () {
+          return chargerQuartiers(geoInitial.arrondissement_id, geoInitial.quartier_id);
+        });
+      }
+    })();
+  </script>
 {% endblock %}
 
 {% block dashboard_extra_css %}

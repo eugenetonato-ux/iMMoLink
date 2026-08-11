@@ -16,8 +16,19 @@ class User(AbstractUser):
 class OwnerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     whatsapp = models.CharField(max_length=30)
-    ville = models.CharField(max_length=100)
-    quartier = models.CharField(max_length=100)
+    # --- Localisation : FK vers geo.Commune / geo.Locality (remplace les anciens champs texte) ---
+    # null=True car OwnerProfile est créé vide via get_or_create avant que le propriétaire
+    # ne remplisse le formulaire ; profil_proprietaire_complet() vérifie leur présence.
+    commune = models.ForeignKey(
+        "geo.Commune", on_delete=models.PROTECT, related_name="owner_profiles",
+        null=True, blank=True,
+        help_text="Remplace l'ancien champ libre 'ville'",
+    )
+    quartier = models.ForeignKey(
+        "geo.Locality", on_delete=models.PROTECT, related_name="owner_profiles",
+        null=True, blank=True,
+        help_text="Remplace l'ancien champ libre 'quartier' (village ou quartier)",
+    )
     adresse = models.CharField(max_length=255, blank=True)
     photo_profil = models.ImageField(upload_to="profiles/owners/")  # upload manuel obligatoire
     verifie = models.BooleanField(default=False)
