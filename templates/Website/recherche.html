@@ -8,19 +8,46 @@
     <div class="container">
 
       <form class="filters-bar card" action="{% url 'website:recherche' %}" method="get">
-        <div class="field">
-          <label for="ville">Ville</label>
-          <input type="text" name="ville" id="ville" value="{{ request.GET.ville }}" placeholder="Écris la ville voulue…" list="villes-suggestions" autocomplete="off">
-          <datalist id="villes-suggestions">
-            {% for ville in villes %}
-              <option value="{{ ville.nom }}"></option>
-            {% endfor %}
-          </datalist>
+        <div class="hero-search-row" id="geo-search-form"
+             data-communes-url="{% url 'geo:communes_by_department' %}"
+             data-arrondissements-url="{% url 'geo:arrondissements_by_commune' %}"
+             data-localities-url="{% url 'geo:localities_by_arrondissement' %}">
+
+          <input type="hidden" name="commune" id="commune-hidden" value="{{ request.GET.commune }}">
+          <input type="hidden" name="quartier" id="quartier-hidden" value="{{ request.GET.quartier }}">
+
+          <div class="field">
+            <label for="department-select">Département</label>
+            <select id="department-select">
+              <option value="">Tous les départements</option>
+              {% for department in departments %}
+                <option value="{{ department.id }}">{{ department.nom }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="commune-select">Commune</label>
+            <select id="commune-select" disabled>
+              <option value="">Choisir d'abord un département</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="arrondissement-select">Arrondissement</label>
+            <select id="arrondissement-select" disabled>
+              <option value="">Choisir d'abord une commune</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="locality-select">Quartier</label>
+            <select id="locality-select" disabled>
+              <option value="">Choisir d'abord un arrondissement</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <label for="quartier">Quartier</label>
-          <input type="text" name="quartier" id="quartier" value="{{ request.GET.quartier }}" placeholder="Quartier">
-        </div>
+
         <div class="field">
           <label for="type">Type</label>
           <select name="type" id="type">
@@ -56,7 +83,7 @@
       <div class="results-header">
         <h1>
           {{ annonces.paginator.count }} logement{{ annonces.paginator.count|pluralize }} trouvé{{ annonces.paginator.count|pluralize }}
-          {% if ville_selectionnee %}à {{ ville_selectionnee }}{% endif %}
+          {% if commune_selectionnee %}à {{ commune_selectionnee.nom }}{% endif %}
         </h1>
       </div>
 
@@ -100,6 +127,13 @@
       padding: 16px;
       margin-bottom: 28px;
     }
+    .hero-search-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: end;
+      flex: 1 1 100%;
+    }
     .results-header { margin-bottom: 18px; }
     .results-header h1 { font-size: 1.2rem; }
 
@@ -119,5 +153,5 @@
 {% endblock %}
 
 {% block extra_js %}
-  <script src="{% static 'js/recherche.js' %}"></script>
+  <script src="{% static 'js/geo-cascade.js' %}"></script>
 {% endblock %}

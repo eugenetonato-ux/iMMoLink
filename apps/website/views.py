@@ -5,18 +5,18 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.common.models import PlatformSettings
-from apps.locations.models import Ville
+from apps.geo.models import Commune, Department
 from apps.properties.models import Property
 
 
-def _villes_avec_compteur():
-    """Annote chaque ville avec son nombre d'annonces publiées (petit
-    référentiel — quelques dizaines de villes au plus, pas besoin d'une
+def _communes_avec_compteur():
+    """Annote chaque commune avec son nombre d'annonces publiées (petit
+    référentiel — quelques dizaines de communes au plus, pas besoin d'une
     requête corrélée complexe)."""
-    villes = list(Ville.objects.all())
-    for ville in villes:
-        ville.nb_annonces = Property.objects.filter(statut="publiee", ville__iexact=ville.nom).count()
-    return villes
+    communes = list(Commune.objects.all())
+    for commune in communes:
+        commune.nb_annonces = Property.objects.filter(statut="publiee", commune=commune).count()
+    return communes
 
 
 def _favoris_ids(user):
@@ -33,19 +33,19 @@ def _favoris_ids(user):
 
 def home(request):
     annonces = Property.objects.filter(statut="publiee").order_by("-created_at")[:8]
-    villes = _villes_avec_compteur()
-    villes_populaires = sorted(
-        [v for v in villes if v.est_populaire or v.nb_annonces > 0],
-        key=lambda v: (-v.nb_annonces, v.ordre),
+    communes = _communes_avec_compteur()
+    communes_populaires = sorted(
+        [c for c in communes if c.nb_annonces > 0],
+        key=lambda c: -c.nb_annonces,
     )[:6]
     return render(
         request,
         "Website/home.html",
         {
             "annonces": annonces,
-            "villes": villes,
-            "villes_populaires": villes_populaires,
+            "communes_populaires": communes_populaires,
             "favoris_ids": _favoris_ids(request.user),
+            "departments": Department.objects.all(),
         },
     )
 
@@ -68,21 +68,20 @@ def recherche(request):
     annonces = Property.objects.filter(statut="publiee")
 
     q = request.GET.get("q", "").strip()
-    ville = request.GET.get("ville", "").strip()
-    quartier = request.GET.get("quartier", "").strip()
+    commune_id = request.GET.get("commune", "").strip()
+    quartier_id = request.GET.get("quartier", "").strip()
     type_logement = request.GET.get("type")
     prix_min = request.GET.get("prix_min")
     prix_max = request.GET.get("prix_max")
     chambres = request.GET.get("chambres")
 
-    # Le locataire écrit librement la ville/le quartier voulu (pas de liste
-    # imposée) : on filtre par correspondance partielle, insensible à la casse.
+    # Recherche libre : on matche sur le nom de la commune ou du quartier.
     if q:
-        annonces = annonces.filter(Q(ville__icontains=q) | Q(quartier__icontains=q))
-    if ville:
-        annonces = annonces.filter(ville__icontains=ville)
-    if quartier:
-        annonces = annonces.filter(quartier__icontains=quartier)
+        annonces = annonces.filter(Q(commune__nom__icontains=q) | Q(quartier__nom__icontains=q))
+    if commune_id:
+        annonces = annonces.filter(commune_id=commune_id)
+    if quartier_id:
+        annonces = annonces.filter(quartier_id=quartier_id)
     if type_logement:
         annonces = annonces.filter(type_logement=type_logement)
     if prix_min:
@@ -97,13 +96,15 @@ def recherche(request):
     paginator = Paginator(annonces, 12)
     page_obj = paginator.get_page(request.GET.get("page"))
 
+    commune_selectionnee = Commune.objects.filter(pk=commune_id).first() if commune_id else None
+
     return render(
         request,
         "Website/recherche.html",
         {
             "annonces": page_obj,
-            "villes": Ville.objects.all(),
-            "ville_selectionnee": ville or None,
+            "departments": Department.objects.all(),
+            "commune_selectionnee": commune_selectionnee,
             "favoris_ids": _favoris_ids(request.user),
         },
     )

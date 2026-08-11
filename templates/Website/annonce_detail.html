@@ -32,7 +32,7 @@
                 {{ annonce.get_disponibilite_display|default:annonce.disponibilite }}
               </span>
               <h1 class="detail-title">{{ annonce.titre }}</h1>
-              <p class="text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }}</p>
+              <p class="text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.commune }}</p>
             </div>
             <div class="detail-price">
               <span class="price">{{ annonce.prix|floatformat:"0" }}</span>
@@ -58,7 +58,7 @@
           {% endif %}
 
           <h2>Localisation</h2>
-          <p class="text-secondary">{{ annonce.quartier }}, {{ annonce.ville }}, Bénin</p>
+          <p class="text-secondary">{{ annonce.quartier }}, {{ annonce.commune }}, Bénin</p>
         </div>
       </div>
 

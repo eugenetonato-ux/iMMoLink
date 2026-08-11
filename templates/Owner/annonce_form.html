@@ -63,20 +63,44 @@
 
     <div class="card form-step">
       <h2 class="form-step-title"><span class="form-step-num">3</span> Localisation</h2>
-      <div class="form-grid-2" data-cascade="ville-quartier" data-cascade-lock="false" data-quartiers-endpoint="{% url 'locations:quartiers_par_ville' ville_id=0 %}">
+      <div class="form-grid-2" id="geo-search-form"
+           data-communes-url="{% url 'geo:communes_by_department' %}"
+           data-arrondissements-url="{% url 'geo:arrondissements_by_commune' %}"
+           data-localities-url="{% url 'geo:localities_by_arrondissement' %}"
+           data-selected-department="{% if annonce %}{{ annonce.commune.department_id|default:'' }}{% endif %}"
+           data-selected-commune="{% if annonce %}{{ annonce.commune_id|default:'' }}{% endif %}"
+           data-selected-arrondissement="{% if annonce %}{{ annonce.quartier.arrondissement_id|default:'' }}{% endif %}"
+           data-selected-locality="{% if annonce %}{{ annonce.quartier_id|default:'' }}{% endif %}">
+
+        <input type="hidden" name="commune" id="commune-hidden">
+        <input type="hidden" name="quartier" id="quartier-hidden">
+
         <div class="field">
-          <label for="ville">Ville <span class="required">*</span></label>
-          <select name="ville" id="ville" required data-role="ville">
+          <label for="department-select">Département <span class="required">*</span></label>
+          <select id="department-select">
             <option value="">Choisir…</option>
-            {% for ville in villes %}
-              <option value="{{ ville.nom }}" data-id="{{ ville.id }}" {% if annonce.ville == ville.nom %}selected{% endif %}>{{ ville.nom }}</option>
+            {% for department in departments %}
+              <option value="{{ department.id }}">{{ department.nom }}</option>
             {% endfor %}
           </select>
         </div>
         <div class="field">
-          <label for="quartier">Quartier <span class="required">*</span></label>
-          <input type="text" name="quartier" id="quartier" value="{{ annonce.quartier|default:'' }}" list="quartiers-suggestions-annonce" autocomplete="off" data-role="quartier" required>
-          <datalist id="quartiers-suggestions-annonce"></datalist>
+          <label for="commune-select">Commune <span class="required">*</span></label>
+          <select id="commune-select" disabled>
+            <option value="">Choisir d'abord un département</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="arrondissement-select">Arrondissement <span class="required">*</span></label>
+          <select id="arrondissement-select" disabled>
+            <option value="">Choisir d'abord une commune</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="locality-select">Quartier <span class="required">*</span></label>
+          <select id="locality-select" disabled>
+            <option value="">Choisir d'abord un arrondissement</option>
+          </select>
         </div>
         <div class="field field-full">
           <label for="adresse">Adresse précise (optionnel, non affichée publiquement)</label>
@@ -130,6 +154,8 @@
       </button>
     </div>
   </form>
+     {% load static %}
+   <script src="{% static 'js/geo-cascade.js' %}"></script>
 {% endblock %}
 
 {% block dashboard_extra_css %}

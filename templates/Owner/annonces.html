@@ -27,7 +27,7 @@
 
           <div class="listing-card-body">
             <h3 class="listing-card-title">{{ annonce.titre }}</h3>
-            <p class="listing-card-location text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.ville }}</p>
+            <p class="listing-card-location text-secondary"><i class="fa-solid fa-location-dot"></i> {{ annonce.quartier }}, {{ annonce.commune }}</p>
             <p class="listing-card-price">
               <span class="price">{{ annonce.prix|floatformat:"0" }}</span>
               <span class="text-secondary">/ {{ annonce.get_periodicite_display }}</span>

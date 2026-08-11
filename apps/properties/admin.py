@@ -17,9 +17,9 @@ class PropertyAmenityInline(admin.TabularInline):
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ("titre", "proprietaire", "ville", "quartier", "prix", "statut", "disponibilite", "created_at")
-    list_filter = ("statut", "type_logement", "ville", "disponibilite")
-    search_fields = ("titre", "ville", "quartier", "proprietaire__user__email")
+    list_display = ("titre", "proprietaire", "commune", "quartier", "prix", "statut", "disponibilite", "created_at")
+    list_filter = ("statut", "type_logement", "commune", "disponibilite")
+    search_fields = ("titre", "commune__nom", "quartier__nom", "proprietaire__user__email")
     inlines = [PropertyImageInline, PropertyAmenityInline]
 
 

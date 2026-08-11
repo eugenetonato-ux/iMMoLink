@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from apps.accounts.services import profil_proprietaire_complet
-from apps.locations.models import Ville
+from apps.geo.models import Department
 
 from . import services
 from .models import Amenity, Property
@@ -52,7 +52,7 @@ def annonce_form(request, pk=None):
         {
             "annonce": annonce,
             "amenities": Amenity.objects.all(),
-            "villes": Ville.objects.all(),
+            "departments": Department.objects.all(),
             "amenity_ids_selectionnes": set(annonce.amenities.values_list("id", flat=True)) if annonce else set(),
         },
     )

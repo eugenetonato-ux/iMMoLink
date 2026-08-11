@@ -15,21 +15,51 @@
         <p class="hero-subtitle">Chambres, studios, appartements et maisons — annonces vérifiées, contact sécurisé.</p>
 
         <form class="hero-search card" action="{% url 'website:recherche' %}" method="get">
-          <div class="hero-search-row" data-cascade="ville-quartier" data-quartiers-endpoint="{% url 'locations:quartiers_par_ville' ville_id=0 %}">
+           <div class="hero-search-row" id="geo-search-form"
+                data-communes-url="{% url 'geo:communes_by_department' %}"
+                data-arrondissements-url="{% url 'geo:arrondissements_by_commune' %}"
+                data-localities-url="{% url 'geo:localities_by_arrondissement' %}">
+
+            <!-- Champs réellement soumis à website:recherche (mêmes noms que sur la page de résultats) -->
+            <input type="hidden" name="commune" id="commune-hidden">
+            <input type="hidden" name="quartier" id="quartier-hidden">
+
+            <!-- Département -->
             <div class="field">
-              <label for="ville">Ville</label>
-              <input type="text" name="ville" id="ville" placeholder="Écris la ville voulue…" list="villes-suggestions" autocomplete="off" data-role="ville">
-              <datalist id="villes-suggestions">
-                {% for ville in villes %}
-                  <option value="{{ ville.nom }}" data-id="{{ ville.id }}"></option>
+              <label for="department-select">Département</label>
+              <select id="department-select">
+                <option value="">Tous les départements</option>
+                {% for department in departments %}
+                  <option value="{{ department.id }}">{{ department.nom }}</option>
                 {% endfor %}
-              </datalist>
+              </select>
             </div>
+
+            <!-- Commune -->
             <div class="field">
-              <label for="quartier">Quartier</label>
-              <input type="text" name="quartier" id="quartier" placeholder="Choisis d'abord une ville" list="quartiers-suggestions" autocomplete="off" data-role="quartier" disabled>
-              <datalist id="quartiers-suggestions"></datalist>
+              <label for="commune-select">Commune</label>
+              <select id="commune-select" disabled>
+                <option value="">Choisir d'abord un département</option>
+              </select>
             </div>
+
+            <!-- Arrondissement -->
+            <div class="field">
+              <label for="arrondissement-select">Arrondissement</label>
+              <select id="arrondissement-select" disabled>
+                <option value="">Choisir d'abord une commune</option>
+              </select>
+            </div>
+
+            <!-- Quartier / Village -->
+            <div class="field">
+              <label for="locality-select">Quartier</label>
+              <select id="locality-select" disabled>
+                <option value="">Choisir d'abord un arrondissement</option>
+              </select>
+            </div>
+
+            <!-- Type -->
             <div class="field">
               <label for="type">Type</label>
               <select name="type" id="type">
@@ -41,14 +71,20 @@
                 <option value="villa">Villa</option>
               </select>
             </div>
+
+            <!-- Prix minimum -->
             <div class="field field-sm">
               <label for="prix_min">Prix min</label>
               <input type="number" name="prix_min" id="prix_min" placeholder="XOF">
             </div>
+
+            <!-- Prix maximum -->
             <div class="field field-sm">
               <label for="prix_max">Prix max</label>
               <input type="number" name="prix_max" id="prix_max" placeholder="XOF">
             </div>
+
+            <!-- Chambres -->
             <div class="field field-sm">
               <label for="chambres">Chambres</label>
               <select name="chambres" id="chambres">
@@ -59,7 +95,12 @@
                 <option value="4">4+</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary hero-search-submit"><i class="fa-solid fa-magnifying-glass"></i> Trouver un logement</button>
+
+            <button type="submit" class="btn btn-primary hero-search-submit">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              Trouver un logement
+            </button>
+
           </div>
         </form>
 
@@ -76,23 +117,20 @@
   </section>
 
   <!-- ============================================================
-       Villes / quartiers populaires
+       Communes populaires
        ============================================================ -->
-  {% if villes_populaires %}
+  {% if communes_populaires %}
   <section class="section">
     <div class="container">
       <div class="dashboard-section-title">
-        <h2>Villes populaires</h2>
+        <h2>Communes populaires</h2>
       </div>
       <div class="cities-row">
-        {% for ville in villes_populaires %}
-          <a href="{% url 'website:recherche' %}?ville={{ ville.nom|urlencode }}" class="city-card">
-            {% if ville.photo %}
-              <img src="{{ ville.photo.url }}" alt="{{ ville.nom }}">
-            {% endif %}
+        {% for commune in communes_populaires %}
+          <a href="{% url 'website:recherche' %}?commune={{ commune.id }}" class="city-card">
             <div class="city-card-overlay">
-              <span class="city-card-name">{{ ville.nom }}</span>
-              <span class="city-card-count">{{ ville.nb_annonces }} annonce{{ ville.nb_annonces|pluralize }}</span>
+              <span class="city-card-name">{{ commune.nom }}</span>
+              <span class="city-card-count">{{ commune.nb_annonces }} annonce{{ commune.nb_annonces|pluralize }}</span>
             </div>
           </a>
         {% endfor %}
@@ -194,11 +232,9 @@
       overflow: hidden;
       background: var(--color-primary-dark);
     }
-    .city-card img { width: 100%; height: 100%; object-fit: cover; }
     .city-card-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(0deg, rgba(17,24,39,0.75) 0%, rgba(17,24,39,0) 55%);
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -214,4 +250,8 @@
       .hero-search-row { flex-direction: column; align-items: stretch; }
     }
   </style>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="{% static 'js/geo-cascade.js' %}"></script>
 {% endblock %}

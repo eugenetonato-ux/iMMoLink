@@ -18,6 +18,7 @@ urlpatterns = [
     path("localisation/", include("apps.locations.urls")),
     path("favoris/", include("apps.favorites.urls")),
     path(f"{ADMIN_URL_PATH}/", include("apps.adminpanel.urls")),
+    path("geo/", include("apps.geo.urls", namespace="geo")),
 ]
 
 if settings.DEBUG:

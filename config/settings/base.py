@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "apps.api",
     "apps.common",
     "apps.website",
+    "apps.geo",
 ]
 
 SITE_ID = 1

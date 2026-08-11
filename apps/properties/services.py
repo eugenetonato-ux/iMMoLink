@@ -16,8 +16,10 @@ def enregistrer_annonce(profil, annonce, data, files):
     annonce.periodicite = data.get("periodicite", "mensuel")
     annonce.caution = data.get("caution") or None
     annonce.chambres = data.get("chambres") or 1
-    annonce.ville = data.get("ville", "").strip()
-    annonce.quartier = data.get("quartier", "").strip()
+
+    # --- Localisation : FK vers geo.Commune / geo.Locality (remplace les anciens champs texte) ---
+    annonce.commune_id = data.get("commune") or None
+    annonce.quartier_id = data.get("quartier") or None
     annonce.adresse = data.get("adresse", "").strip()
     if not annonce.pk:
         annonce.statut = "brouillon"
@@ -54,7 +56,7 @@ def soumettre_pour_validation(annonce):
             subject=f"[iMMoLink] Nouvelle annonce à valider — {annonce.titre}",
             message=(
                 f"{annonce.proprietaire.user.email} a soumis « {annonce.titre} » "
-                f"({annonce.ville}, {annonce.quartier}) pour validation.\n\n"
+                f"({annonce.commune}, {annonce.quartier}) pour validation.\n\n"
                 f"Voir dans l'espace admin : /{settings.ADMIN_URL_PATH}/annonces/"
             ),
             from_email=settings.DEFAULT_FROM_EMAIL or None,

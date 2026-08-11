@@ -58,9 +58,22 @@ class Property(models.Model):
     periodicite = models.CharField(max_length=20, choices=PERIOD_CHOICES, default="mensuel")
     caution = models.DecimalField(max_digits=12, decimal_places=0, null=True, blank=True)
     chambres = models.PositiveSmallIntegerField(default=1)
-    ville = models.CharField(max_length=100)
-    quartier = models.CharField(max_length=100)
+
+    # --- Localisation (remplace les anciens champs texte libre ville / quartier) ---
+    commune = models.ForeignKey(
+        "geo.Commune",
+        on_delete=models.PROTECT,
+        related_name="properties",
+        help_text="Remplace l'ancien champ libre 'ville'",
+    )
+    quartier = models.ForeignKey(
+        "geo.Locality",
+        on_delete=models.PROTECT,
+        related_name="properties",
+        help_text="Remplace l'ancien champ libre 'quartier' (village ou quartier)",
+    )
     adresse = models.CharField(max_length=255, blank=True)
+
     statut = models.CharField(max_length=30, choices=STATUT_CHOICES, default="brouillon")
     disponibilite = models.CharField(max_length=30, choices=DISPONIBILITE_CHOICES, default="disponible")
     motif_refus = models.TextField(blank=True)
@@ -75,6 +88,10 @@ class Property(models.Model):
         ordering = ["-created_at"]
         verbose_name = "Annonce"
         verbose_name_plural = "Annonces"
+        indexes = [
+            models.Index(fields=["commune"]),
+            models.Index(fields=["quartier"]),
+        ]
 
     def __str__(self):
         return self.titre

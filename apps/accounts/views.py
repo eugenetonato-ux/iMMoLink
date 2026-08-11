@@ -112,10 +112,10 @@ def completer_profil_proprietaire(request):
             return redirect("owner:owner_dashboard")
         messages.error(request, "Merci de compléter tous les champs obligatoires, y compris la photo de profil.")
 
-    from apps.locations.models import Ville
+    from apps.geo.models import Commune
 
     return render(
         request,
         "Owner/completer_profil.html",
-        {"profil": profil, "villes": Ville.objects.all()},
+        {"profil": profil, "villes": Commune.objects.all()},
     )
