@@ -1,0 +1,54 @@
+{% extends "Base/base.html" %}
+{% load static %}
+
+{% block title %}Paiement en cours — iMMoLink{% endblock %}
+
+{% block content %}
+  <section class="paiement-page">
+    <div class="container paiement-container">
+      <div class="card paiement-card paiement-attente">
+        <div class="paiement-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i></div>
+        <h1>Valide le paiement sur ton téléphone</h1>
+        <p class="text-secondary">
+          Un code de confirmation a été envoyé sur ton numéro. Valide-le pour débloquer le contact
+          du propriétaire de « {{ annonce.titre }} ».
+        </p>
+        <p class="paiement-reference text-secondary">Référence : {{ paiement.reference }}</p>
+        <a href="{% url 'payments:annuler' paiement.reference %}" class="btn btn-outline btn-block">Annuler</a>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block extra_css %}
+  <style>
+    .paiement-attente { text-align: center; }
+    .paiement-spinner { font-size: 2rem; color: var(--color-primary); margin-bottom: 16px; }
+  </style>
+{% endblock %}
+
+{% block extra_js %}
+  {{ paiement.reference|json_script:"paiement-ref" }}
+  <script>
+    (function () {
+      const reference = JSON.parse(document.getElementById("paiement-ref").textContent);
+      const statutUrl = "{% url 'payments:statut' paiement.reference %}";
+      const detailUrl = "{% url 'website:annonce_detail' annonce.pk %}";
+
+      const intervalId = setInterval(function () {
+        fetch(statutUrl)
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.statut === "successful") {
+              clearInterval(intervalId);
+              window.location.href = detailUrl;
+            } else if (data.statut === "failed" || data.statut === "cancelled") {
+              clearInterval(intervalId);
+              window.location.reload();
+            }
+          })
+          .catch(function () {});
+      }, 3000);
+    })();
+  </script>
+{% endblock %}

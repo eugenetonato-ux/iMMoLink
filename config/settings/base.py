@@ -174,3 +174,11 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="", cast=lambda v: [s.strip() for s in v.split(",") if s])
+
+# --- Sebpay (paiements Mobile Money) ---
+SEBPAY_API_KEY = config("SEBPAY_API_KEY", default="")
+SEBPAY_API_URL = config("SEBPAY_API_URL", default="")  # URL exacte de l'endpoint, à copier depuis ton dashboard Sebpay
+SEBPAY_WEBHOOK_URL = config("SEBPAY_WEBHOOK_URL", default="")
+SEBPAY_WEBHOOK_SECRET = config("SEBPAY_WEBHOOK_SECRET", default="")
+SEBPAY_SIGNATURE_HEADER = config("SEBPAY_SIGNATURE_HEADER", default="X-Sebpay-Signature")
+SEBPAY_API_URL = config("SEBPAY_API_URL", default="https://newapi.sebpay.bj/api/v1/collections")

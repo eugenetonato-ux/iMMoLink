@@ -30,7 +30,7 @@
           </div>
         </div>
 
-        <form method="post" action="{% url 'payments:confirmer_dev' paiement.reference %}" class="paiement-methodes">
+        <form method="post" action="{% if debug %}{% url 'payments:confirmer_dev' paiement.reference %}{% else %}{% url 'payments:lancer' paiement.reference %}{% endif %}" class="paiement-methodes">
           {% csrf_token %}
           <label class="paiement-methode">
             <input type="radio" name="methode" value="moov_money" checked>
@@ -40,6 +40,13 @@
             <input type="radio" name="methode" value="mtn_money">
             <span><i class="fa-solid fa-mobile-screen-button"></i> MTN Money</span>
           </label>
+
+          {% if not debug %}
+            <div class="field paiement-phone-field">
+              <label for="telephone"><i class="fa-solid fa-phone"></i> Numéro Mobile Money <span class="required">*</span></label>
+              <input type="tel" name="telephone" id="telephone" placeholder="+229 01 XX XX XX XX" value="{{ paiement.telephone|default:'' }}" required>
+            </div>
+          {% endif %}
 
           {% if debug %}
             <p class="paiement-dev-note">Mode développement : aucune clé Sebpay n'est configurée. Ce bouton simule la confirmation d'un paiement réussi (webhook).</p>
@@ -83,6 +90,14 @@
     }
     .paiement-methode:has(input:checked) { border-color: var(--color-primary); background: rgba(29,122,116,0.06); }
     .paiement-dev-note { font-size: 0.78rem; color: var(--color-warning); background: rgba(245,158,11,0.08); padding: 8px 10px; border-radius: 8px; margin: 4px 0; }
+
+    .paiement-phone-field { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+    .paiement-phone-field label { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .paiement-phone-field input {
+      border: 1px solid var(--color-border); border-radius: 10px; padding: 10px 12px;
+      font-family: var(--font-body); font-size: 0.92rem;
+    }
+    .required { color: var(--color-error); }
 
     .paiement-cancel { margin-top: 10px; }
     .paiement-secure { font-size: 0.78rem; text-align: center; margin: 18px 0 0; }

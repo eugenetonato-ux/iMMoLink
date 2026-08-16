@@ -32,6 +32,8 @@ class Payment(models.Model):
     reference = models.CharField(max_length=64, unique=True, default=generer_reference, editable=False)
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default="pending")
     methode = models.CharField(max_length=30, choices=METHODE_CHOICES, blank=True)
+    telephone = models.CharField(max_length=20, blank=True)
+    sebpay_transaction_id = models.CharField(max_length=100, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     confirmed_at = models.DateTimeField(null=True, blank=True)
 
