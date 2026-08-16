@@ -35,7 +35,7 @@
         </div>
         <div class="field">
           <label for="department"><i class="fa-solid fa-map"></i> Département <span class="required">*</span></label>
-          <select id="department" required>
+          <select name="department" id="department" required>
             <option value="">Choisir un département</option>
             {% for department in departments %}
               <option value="{{ department.id }}">{{ department.nom }}</option>
@@ -50,7 +50,7 @@
         </div>
         <div class="field">
           <label for="arrondissement"><i class="fa-solid fa-signs-post"></i> Arrondissement <span class="required">*</span></label>
-          <select id="arrondissement" required disabled>
+          <select name="arrondissement" id="arrondissement" required disabled>
             <option value="">Choisir d'abord une commune</option>
           </select>
         </div>
@@ -167,7 +167,7 @@
 
 {% block dashboard_extra_css %}
   <style>
-    .profile-form-card { max-width: 640px; width: 100%; padding: 20px; min-width: 0; }
+    .profile-form-card { max-width: 640px; width: 100%; padding: 20px; min-width: 0; margin: 0 auto; }
     @media (min-width: 640px) {
       .profile-form-card { padding: 28px; }
     }

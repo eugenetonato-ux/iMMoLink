@@ -102,7 +102,9 @@ def completer_profil_proprietaire(request):
         services.creer_ou_maj_profil_proprietaire(
             request.user,
             whatsapp=request.POST.get("whatsapp"),
+            department=request.POST.get("department"),
             commune=request.POST.get("commune"),
+            arrondissement=request.POST.get("arrondissement"),
             quartier=request.POST.get("quartier"),
             adresse=request.POST.get("adresse", ""),
             photo_profil=request.FILES.get("photo_profil"),
@@ -120,9 +122,9 @@ def completer_profil_proprietaire(request):
     profil_geo_selectionne = None
     if profil and profil.quartier_id:
         profil_geo_selectionne = {
-            "department_id": profil.commune.department_id,
+            "department_id": profil.department_id,
             "commune_id": profil.commune_id,
-            "arrondissement_id": profil.quartier.arrondissement_id,
+            "arrondissement_id": profil.arrondissement_id,
             "quartier_id": profil.quartier_id,
         }
 

@@ -69,6 +69,10 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body.menu-open { overflow: hidden; }
 
 h1, h2, h3, h4 {

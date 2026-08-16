@@ -25,21 +25,35 @@ def attribuer_role(user, role):
 
 
 def profil_proprietaire_complet(user):
-    """Un profil propriétaire est complet quand WhatsApp, ville, quartier et
-    photo de profil (upload manuel obligatoire) sont renseignés."""
+    """Un profil propriétaire est complet quand WhatsApp, localisation complète
+    (département, commune, arrondissement, quartier) et photo de profil
+    (upload manuel obligatoire) sont renseignés."""
     try:
         profil = user.ownerprofile
     except OwnerProfile.DoesNotExist:
         return False
-    return bool(profil.whatsapp and profil.commune_id and profil.quartier_id and profil.photo_profil)
+    return bool(
+        profil.whatsapp
+        and profil.department_id
+        and profil.commune_id
+        and profil.arrondissement_id
+        and profil.quartier_id
+        and profil.photo_profil
+    )
 
 
-def creer_ou_maj_profil_proprietaire(user, whatsapp, commune, quartier, adresse="", photo_profil=None):
+def creer_ou_maj_profil_proprietaire(
+    user, whatsapp, department, commune, arrondissement, quartier, adresse="", photo_profil=None
+):
     profil, _ = OwnerProfile.objects.get_or_create(user=user)
     if whatsapp:
         profil.whatsapp = whatsapp
+    if department:
+        profil.department_id = department
     if commune:
         profil.commune_id = commune
+    if arrondissement:
+        profil.arrondissement_id = arrondissement
     if quartier:
         profil.quartier_id = quartier
     if adresse:
