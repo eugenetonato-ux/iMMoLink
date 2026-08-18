@@ -6,11 +6,6 @@ from decouple import config
 
 from .base import *  # noqa: F401,F403
 
-DEBUG = True
-print("=== PROD SETTINGS LOADED ===")
-print("DEBUG =", DEBUG)
-print("ALLOWED_HOSTS =", ALLOWED_HOSTS)
-print("CSRF_TRUSTED_ORIGINS =", CSRF_TRUSTED_ORIGINS)
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="").split(",")
 
@@ -19,6 +14,12 @@ CSRF_TRUSTED_ORIGINS = config(
     default="",
     cast=lambda v: [s.strip() for s in v.split(",") if s],
 )
+
+DEBUG = True
+print("=== PROD SETTINGS LOADED ===")
+print("DEBUG =", DEBUG)
+print("ALLOWED_HOSTS =", ALLOWED_HOSTS)
+print("CSRF_TRUSTED_ORIGINS =", CSRF_TRUSTED_ORIGINS)
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
