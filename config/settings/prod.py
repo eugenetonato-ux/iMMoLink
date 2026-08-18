@@ -30,7 +30,7 @@ X_FRAME_OPTIONS = "DENY"
 
 # Décommente si le site est derrière un proxy/load balancer (Nginx, Render, etc.)
 # qui termine le HTTPS avant d'atteindre Django :
-# SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # --- Cache partagé (base de données) ---
 # Important : LocMemCache (utilisé en dev) est propre à chaque process. En prod,
