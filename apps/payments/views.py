@@ -49,12 +49,15 @@ def lancer_paiement(request, reference):
     telephone = request.POST.get("telephone", "").strip().lstrip("+")
     methode = request.POST.get("methode", "")
 
-    if not telephone:
-        messages.error(request, "Merci de renseigner ton numéro Mobile Money.")
+    if not telephone or not telephone.isdigit() or len(telephone) < 8:
+        messages.error(request, "Merci de renseigner un numéro Mobile Money valide.")
         return redirect("payments:initier", annonce_id=paiement.annonce_id)
 
     try:
         services.lancer_paiement_sebpay(paiement, telephone=telephone, methode=methode)
+    except ValueError:
+        messages.error(request, "Merci de choisir un moyen de paiement valide.")
+        return redirect("payments:initier", annonce_id=paiement.annonce_id)
     except services.SebpayError:
         messages.error(request, "Impossible de contacter Sebpay pour le moment, réessaie dans un instant.")
         return redirect("payments:initier", annonce_id=paiement.annonce_id)
@@ -108,7 +111,7 @@ def _verifier_signature_sebpay(request):
         return False
 
     signature_calculee = hmac.new(
-        settings.SEBPAY_API_KEY.encode("utf-8"),
+        settings.SEBPAY_SECRET_KEY.encode("utf-8"),
         request.body,
         hashlib.sha256,
     ).hexdigest()

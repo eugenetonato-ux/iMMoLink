@@ -54,7 +54,7 @@ def _appeler_api_sebpay(payment, telephone, methode):
         "callback_url": settings.SEBPAY_WEBHOOK_URL,
     }
     headers = {
-        "Authorization": f"Bearer {settings.SEBPAY_API_KEY}",
+        "Authorization": f"Bearer {settings.SEBPAY_SECRET_KEY}",
         "Content-Type": "application/json",
     }
 
@@ -66,6 +66,7 @@ def _appeler_api_sebpay(payment, telephone, methode):
             timeout=15,
         )
         reponse.raise_for_status()
+        logger.info("Réponse Sebpay (%s) : %s", reponse.status_code, reponse.text)
     except requests.RequestException as exc:
         logger.error("Échec appel Sebpay pour %s : %s", payment.reference, exc)
         raise SebpayError(str(exc)) from exc
