@@ -53,3 +53,4 @@ wcwidth==0.8.2
 gunicorn
 whitenoise
 dj-database-url
+pyotp
